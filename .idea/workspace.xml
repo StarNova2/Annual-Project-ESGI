@@ -14,34 +14,6 @@
     <list default="true" id="4c5d3e73-0261-4473-86a7-005182c2da94" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PythonProject/[Notebook] Cas de tests.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/PythonProject/[Notebook] Cas de tests.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/src/linear.rs" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/src/linear.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/target/.rustc_info.json" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/target/.rustc_info.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/target/debug/.fingerprint/lib_classification-92fcbc91806f9c39/dep-test-lib-lib_classification" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/target/debug/.fingerprint/lib_classification-92fcbc91806f9c39/dep-test-lib-lib_classification" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/target/debug/.fingerprint/lib_classification-92fcbc91806f9c39/output-test-lib-lib_classification" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/target/debug/.fingerprint/lib_classification-92fcbc91806f9c39/output-test-lib-lib_classification" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/target/debug/.fingerprint/lib_classification-cbdc1928e1d77cce/output-lib-lib_classification" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/target/debug/.fingerprint/lib_classification-cbdc1928e1d77cce/output-lib-lib_classification" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/target/debug/build/getrandom-11fda8325cdd0dbe/build-script-build.exe" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/target/debug/build/getrandom-11fda8325cdd0dbe/build-script-build.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/target/debug/build/getrandom-11fda8325cdd0dbe/build_script_build-11fda8325cdd0dbe.exe" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/target/debug/build/getrandom-11fda8325cdd0dbe/build_script_build-11fda8325cdd0dbe.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/target/debug/build/getrandom-11fda8325cdd0dbe/build_script_build-11fda8325cdd0dbe.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/target/debug/build/getrandom-11fda8325cdd0dbe/build_script_build-11fda8325cdd0dbe.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/target/debug/build/getrandom-11fda8325cdd0dbe/build_script_build.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/target/debug/build/getrandom-11fda8325cdd0dbe/build_script_build.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/target/debug/incremental/lib_classification-07850abfyvc26/s-hhboxizjt5-0c9svi2-e68qd3dl14dk3d1v12zprxg40/dep-graph.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/target/debug/incremental/lib_classification-07850abfyvc26/s-hhboxizjt5-0c9svi2-e68qd3dl14dk3d1v12zprxg40/query-cache.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/target/debug/incremental/lib_classification-07850abfyvc26/s-hhboxizjt5-0c9svi2-e68qd3dl14dk3d1v12zprxg40/work-products.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/target/debug/incremental/lib_classification-07850abfyvc26/s-hhboxizjt5-0c9svi2.lock" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/target/debug/incremental/lib_classification-1miwa0slh4wm5/s-hhboxizjw1-0fuq2zi-0zgv7wnbpfy9zvz4eivasekln/dep-graph.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/target/debug/incremental/lib_classification-1miwa0slh4wm5/s-hhboxizjw1-0fuq2zi-0zgv7wnbpfy9zvz4eivasekln/query-cache.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/target/debug/incremental/lib_classification-1miwa0slh4wm5/s-hhboxizjw1-0fuq2zi-0zgv7wnbpfy9zvz4eivasekln/work-products.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/target/debug/incremental/lib_classification-1miwa0slh4wm5/s-hhboxizjw1-0fuq2zi.lock" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/target/release/.fingerprint/lib_classification-83e556cf606ede03/output-lib-lib_classification" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/target/release/.fingerprint/lib_classification-83e556cf606ede03/output-lib-lib_classification" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/target/release/build/getrandom-7581a9148a702c4b/build-script-build.exe" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/target/release/build/getrandom-7581a9148a702c4b/build-script-build.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/target/release/build/getrandom-7581a9148a702c4b/build_script_build-7581a9148a702c4b.exe" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/target/release/build/getrandom-7581a9148a702c4b/build_script_build-7581a9148a702c4b.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/target/release/build/getrandom-7581a9148a702c4b/build_script_build-7581a9148a702c4b.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/target/release/build/getrandom-7581a9148a702c4b/build_script_build-7581a9148a702c4b.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/target/release/build/getrandom-7581a9148a702c4b/build_script_build.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/target/release/build/getrandom-7581a9148a702c4b/build_script_build.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/target/release/deps/lib_classification.dll" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/target/release/deps/lib_classification.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/target/release/deps/lib_classification.dll.exp" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/target/release/deps/lib_classification.dll.exp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/target/release/deps/lib_classification.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/target/release/deps/lib_classification.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/target/release/lib_classification.dll" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/target/release/lib_classification.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/target/release/lib_classification.dll.exp" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/target/release/lib_classification.dll.exp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib_classification/target/release/lib_classification.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/target/release/lib_classification.pdb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,6 +52,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.rust.reset.selective.auto.import&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
     &quot;ai.playground.ignore.import.keys.banner.in.settings&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;cas__test&quot;,
@@ -91,7 +64,7 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager" selected="Python.main">
+  <component name="RunManager" selected="Cargo.Test lib_classification">
     <configuration name="Test lib_classification" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="buildProfileId" value="test" />
       <option name="command" value="test --workspace" />
@@ -158,7 +131,16 @@
       <workItem from="1775389421759" duration="4339000" />
       <workItem from="1775394625472" duration="791000" />
       <workItem from="1775395439645" duration="5791000" />
-      <workItem from="1775406210450" duration="5417000" />
+      <workItem from="1775406210450" duration="7362000" />
+      <workItem from="1775476277284" duration="1959000" />
+      <workItem from="1775478296957" duration="121000" />
+      <workItem from="1775478435327" duration="443000" />
+      <workItem from="1775479046260" duration="1036000" />
+      <workItem from="1775480568291" duration="2663000" />
+      <workItem from="1775483383562" duration="844000" />
+      <workItem from="1775484252841" duration="774000" />
+      <workItem from="1775485495666" duration="2833000" />
+      <workItem from="1775493160588" duration="4801000" />
     </task>
     <servers />
   </component>
