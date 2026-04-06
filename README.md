@@ -1,36 +1,54 @@
 # Annual-Project-ESGI
 
-____
+## Objective
+The goal is to implement machine learning models in Rust.
 
-## RENDU N°1
+We work on a game screenshot classification task with 3 classes:
+- FPS
+- METROIDVANIA
+- MOBA
 
-06/04/2026
-Modèle linéaire appliqué aux cas de tests ainsi qu'à un bout du dataset en cours de constitution  
-Transformation non linéaire pour les cas 'KO'  
-PMC appliqué aux cas de tests ainsi qu'à une portion du dataset en cours de constitution  
-•	Livrables :  
-  - Projet de test opérationnel et sources  
-  - Rapport commentant les résultats observés.  
 
-Début d'implémentation de l'application (tuyauterie)  
+## Technologies
+- Rust
+- Python
+- ctypes
+- numpy
+- Pillow
 
-## RENDU N°2
+## Project structure
+- `lib_classification/src/linear.rs`: linear model used for the professor-style case
+- `lib_classification/src/linear_dataset.rs`: linear model adapted for the dataset
+- `lib_classification/src/MLP.rs`: naive MLP core
+- `lib_classification/src/mlp_ffi.rs`: FFI wrappers for the MLP
+- `PythonProject/rust_bridge.py`: Python/Rust bridge
+- `PythonProject/dataset_loader.py`: dataset loading and preprocessing
+- `PythonProject/run_dataset.py`: dataset training and evaluation script
 
-17/06/2026 (DATE PROVISOIRE)  
-Radial Basis Function Network et SVM (ou autre) appliqué aux cas de tests  
-•	Démonstration de l’implémentation de l’ensemble des algorithmes et modèles de réseaux de neurones étudiés sur les cas de tests ainsi que sur le dataset constitué  
-•	Possibilité de sauvegarder/charger des modèles entrainés et de les utiliser grâce au système client/serveur sur de nouvelles données  
-•	Livrables :  
-  -	Projet de démonstration et sources  
-  -	Première ébauche du rapport intéractif  
+## Build
+```powershell
+cd .\lib_classification
+cargo build
+```
 
-## RENDU FINAL
+## Test on Dataset
+Before launching the dataset test, update the dataset path so it matches the path on your machine.
 
-20/07/2026 (DATE PROVISOIRE)  
-Soutenance publique  
-•	Présentation de la démarche scientifique des étudiants pour aborder leurs problématique à l’aide des méthodes et algorithmes vu en cours. Rapide démonstration, analyse et critique des résultats obtenus.  
-•	Livrables :  
-  -	Slides  
-  -	Projet de démonstration et sources  
-  -	Document interactif Jupyter  
-  -	Rapport complet  
+In `PythonProject/dataset_loader.py`, change `DEFAULT_DATASET_ROOT` so it points to your local dataset folder.
+
+
+```powershell
+cd .\PythonProject
+```
+
+Launch the dataset script with:
+```powershell
+py .\run_dataset.py
+```
+
+If needed, you can also test other preprocessing settings:
+```powershell
+py .\run_dataset.py --grayscale
+py .\run_dataset.py --rgb
+py .\run_dataset.py --width 16 --height 16
+```
