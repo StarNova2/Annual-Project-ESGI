@@ -69,6 +69,7 @@ Configuration :
 
 
 Screenshot du terminal :
+
 ![Test 3](screenshot/image-2.png)
 
 ### Test 4
