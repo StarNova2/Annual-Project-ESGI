@@ -1,0 +1,11 @@
+[package]
+name = "lib_classification"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+rand = "0.10.0"
+libm = "0.2"
