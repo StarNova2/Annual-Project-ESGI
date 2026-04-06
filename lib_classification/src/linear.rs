@@ -26,13 +26,13 @@ pub extern "C" fn print_hi(){
 
 #[unsafe(no_mangle)]
 pub extern "C" fn initialisation_droite() -> *mut MyDroite{
-    //génération de 3 nombres random
+    //gÃ©nÃ©ration de 3 nombres random
     let mut rng = rand::rng();
     let r1 : f32 = rng.random();
     let r2 : f32 = rng.random();
     let r3 : f32 = rng.random();
 
-    //Création de MyDroite contenant un tuples de 3 random f32
+    //CrÃ©ation de MyDroite contenant un tuples de 3 random f32
     let droite = MyDroite::new(r1, r2, r3);
 
     //Box::into_raw() --> renvoie l'adresse (pour que le renvoie de pointeur fonctionne)depuis l'heap
