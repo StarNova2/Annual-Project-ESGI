@@ -155,6 +155,3 @@ impl MLP{
         self.d[self.length].try_into().unwrap()
     }
 }
-
-fn main(){
-}
