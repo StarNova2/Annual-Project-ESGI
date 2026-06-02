@@ -1,7 +1,7 @@
-use crate::MLP::MLP;
+use crate::mlp::mlp;
 
 #[unsafe(no_mangle)]
-pub extern "C" fn mlp_create(layer_sizes: *const usize, layer_count: usize) -> *mut MLP {
+pub extern "C" fn mlp_create(layer_sizes: *const usize, layer_count: usize) -> *mut mlp {
     if layer_sizes.is_null() || layer_count < 2 {
         return std::ptr::null_mut();
     }
@@ -20,12 +20,12 @@ pub extern "C" fn mlp_create(layer_sizes: *const usize, layer_count: usize) -> *
         .map(|&size| size as i32)
         .collect();
 
-    Box::into_raw(Box::new(MLP::new(input_size, hidden_layers, output_size)))
+    Box::into_raw(Box::new(mlp::new(input_size, hidden_layers, output_size)))
 }
 
 #[unsafe(no_mangle)]
 pub extern "C" fn mlp_train(
-    model: *mut MLP,
+    model: *mut mlp,
     dataset_inputs: *const f32,
     dataset_expected_outputs: *const f32,
     sample_count: usize,
@@ -69,7 +69,7 @@ pub extern "C" fn mlp_train(
 
 #[unsafe(no_mangle)]
 pub extern "C" fn mlp_predict(
-    model: *mut MLP,
+    model: *mut mlp,
     inputs: *const f32,
     output: *mut f32,
     is_classification: u8,
@@ -95,7 +95,7 @@ pub extern "C" fn mlp_predict(
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn mlp_output_dim(model: *const MLP) -> usize {
+pub extern "C" fn mlp_output_dim(model: *const mlp) -> usize {
     if model.is_null() {
         return 0;
     }
@@ -104,7 +104,7 @@ pub extern "C" fn mlp_output_dim(model: *const MLP) -> usize {
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn mlp_free(model: *mut MLP) {
+pub extern "C" fn mlp_free(model: *mut mlp) {
     if model.is_null() {
         return;
     }

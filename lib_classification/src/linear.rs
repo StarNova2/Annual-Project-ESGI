@@ -1,8 +1,7 @@
-use std::ascii::escape_default;
-use rand::distr::weighted::Weight;
 use rand::RngExt;
 
-struct MyDroite{
+#[repr(C)]
+pub struct MyDroite{
     a:f32,
     b:f32,
     c:f32
@@ -43,7 +42,7 @@ pub extern "C" fn initialisation_droite() -> *mut MyDroite{
 #[unsafe(no_mangle)]
 pub extern "C" fn linear_classification_prediction(weights1: f32, weights2: f32, weights3: f32, xinput1 : f32, xinput2: f32, xinput3: f32 ) ->i8{
     let scal = weights1*xinput1 + weights2*xinput2 + weights3*xinput3;
-    if(scal>=0.0){
+    if scal>=0.0{
         1
     } else{
         -1
