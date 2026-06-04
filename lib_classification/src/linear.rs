@@ -40,30 +40,30 @@ pub extern "C" fn initialisation_droite() -> *mut MyDroite{
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn linear_classification_prediction(weights1: f32, weights2: f32, weights3: f32, xinput1 : f32, xinput2: f32, xinput3: f32 ) ->i8{
+pub extern "C" fn linear_classification_prediction(weights1: f32, weights2: f32, weights3: f32, xinput1 : f32, xinput2: f32, xinput3: f32 ) ->f32{
     let scal = weights1*xinput1 + weights2*xinput2 + weights3*xinput3;
     if scal>=0.0{
-        1
+        1.0
     } else{
-        -1
+        -1.0
     }
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn training(pas_apprentissage : f32, n_loop : u32, ln_point : u32, mut w  : MyDroite, ensemble_point: *const f32, label: *const i8 ) -> *mut MyDroite{
+pub extern "C" fn training(pas_apprentissage : f32, n_loop : u32, ln_point : u32, mut w  : MyDroite, ensemble_point: *const f32, label: *const f32 ) -> *mut MyDroite{
     let data: &[f32] = unsafe {
         std::slice::from_raw_parts(ensemble_point, (ln_point* 2 ) as usize)
     };
 
-    let labels: &[i8] = unsafe{
+    let labels: &[f32] = unsafe{
         std::slice::from_raw_parts(label, ln_point as usize)
     };
 
     let mut rng = rand::rng();
     let mut k : u32;
     let mut xk :MyDroite;
-    let mut yk : i8;
-    let mut gxk : i8;
+    let mut yk : f32;
+    let mut gxk : f32;
     let mut x : f32;
     let mut y : f32;
 
@@ -77,11 +77,16 @@ pub extern "C" fn training(pas_apprentissage : f32, n_loop : u32, ln_point : u32
         gxk = linear_classification_prediction(w.a, w.b, w.c, xk.a, xk.b, xk.c);
 
         let error = (yk - gxk) as f32;
-        w.a = w.a + pas_apprentissage* xk.a*error;
-        w.b = w.b + pas_apprentissage* xk.b*error;
-        w.c = w.c + pas_apprentissage* xk.c*error;
+        //if(error!=0 as f32){
+            w.a = w.a + pas_apprentissage* xk.a*(yk as f32 - gxk as f32);
+            w.b = w.b + pas_apprentissage* xk.b*(yk as f32 - gxk as f32);
+            w.c = w.c + pas_apprentissage* xk.c*(yk as f32 - gxk as f32);
+        //}
+
 
 
     }
+
+
     Box::into_raw(Box::new(w))
 }
