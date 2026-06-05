@@ -76,7 +76,7 @@ pub extern "C" fn training(pas_apprentissage : f32, n_loop : u32, ln_point : u32
         yk = labels[(k) as usize * 1];
         gxk = linear_classification_prediction(w.a, w.b, w.c, xk.a, xk.b, xk.c);
 
-        let error = (yk - gxk) as f32;
+        //let error = (yk - gxk) as f32;
         //if(error!=0 as f32){
             w.a = w.a + pas_apprentissage* xk.a*(yk as f32 - gxk as f32);
             w.b = w.b + pas_apprentissage* xk.b*(yk as f32 - gxk as f32);
