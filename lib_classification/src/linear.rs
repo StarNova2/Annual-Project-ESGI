@@ -52,7 +52,7 @@ pub extern "C" fn linear_classification_prediction(weights1: f32, weights2: f32,
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn training( , n_loop : u32, ln_point : u32, mut w  : MyDroite, ensemble_point: *const f32, label: *const f32 ) -> *mut MyDroite{
+pub extern "C" fn training( pas_apprentissage: f32, n_loop : u32, ln_point : u32, mut w  : MyDroite, ensemble_point: *const f32, label: *const f32 ) -> *mut MyDroite{
     let data: &[f32] = unsafe {
         std::slice::from_raw_parts(ensemble_point, (ln_point* 2 ) as usize)
     };
