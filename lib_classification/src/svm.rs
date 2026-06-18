@@ -17,7 +17,10 @@ Output: w
 Notes:
 
 Hinge loss uses max(0, 1 − y * (w·x)).
-Pegasos is simple and effective for linear SVMs; mini-batch k=1 is classic stochastic, larger k reduces variance. */
+Pegasos is simple and effective for linear SVMs; mini-batch k=1 is classic stochastic, larger k reduces variance. 
+
+K(xn (x indice n), xm (x indice m)) = e^-xn² * e^-xm² * e^2*xn*xm
+*/
 
 
 pub struct Svm{
@@ -33,8 +36,16 @@ impl Svm{
     }
 
     pub fn new(_inputs_size :i32, _output_size:i32) -> Self{
-        Self{}
     }
     
 }
 
+struct SvmRbf {
+    support_vectors: Vec<Vec<f64>>,
+    support_labels: Vec<f64>,
+    alpha: Vec<f64>,
+    bias: f64,
+    gamma: f64,
+}
+    
+    
