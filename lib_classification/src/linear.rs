@@ -20,6 +20,7 @@ impl MyDroite {
 
 }
 
+
 #[unsafe(no_mangle)]
 pub extern "C" fn print_hi(){
     println!("Hello !");
@@ -53,13 +54,9 @@ pub extern "C" fn linear_classification_prediction(weights1: f32, weights2: f32,
 
 #[unsafe(no_mangle)]
 pub extern "C" fn training( pas_apprentissage: f32, n_loop : u32, ln_point : u32, mut w  : MyDroite, ensemble_point: *const f32, label: *const f32 ) -> *mut MyDroite{
-    let data: &[f32] = unsafe {
-        std::slice::from_raw_parts(ensemble_point, (ln_point* 2 ) as usize)
-    };
+    let data: &[f32] = unsafe {std::slice::from_raw_parts(ensemble_point, (ln_point* 2 ) as usize)};
 
-    let labels: &[f32] = unsafe{
-        std::slice::from_raw_parts(label, ln_point as usize)
-    };
+    let labels: &[f32] = unsafe{std::slice::from_raw_parts(label, ln_point as usize)};
 
     let mut rng = rand::rng();
     let mut k : u32;
@@ -75,7 +72,7 @@ pub extern "C" fn training( pas_apprentissage: f32, n_loop : u32, ln_point : u32
         y = data[(k*2+1) as usize];
         xk = MyDroite::new(1.0,x,y );
         //yk = labels[k as usize];
-        yk = labels[(k) as usize * 1];
+        yk = labels[(k) as usize];
         gxk = linear_classification_prediction(w.a, w.b, w.c, xk.a, xk.b, xk.c);
 
         let error = (yk - gxk) as f32;
