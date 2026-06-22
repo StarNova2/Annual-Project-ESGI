@@ -38,7 +38,8 @@ class RustLib:
         self._configure_signatures()
 
     def _configure_signatures(self) -> None:
-        # declaration of the linear ffi signatures
+
+        #----Declaration du modèle linéaire via ffi signatures----
         self.lib.linear_model_create.argtypes = [ctypes.c_size_t, ctypes.c_float]
         self.lib.linear_model_create.restype = ctypes.c_void_p
 
@@ -61,7 +62,8 @@ class RustLib:
         self.lib.linear_model_free.argtypes = [ctypes.c_void_p]
         self.lib.linear_model_free.restype = None
 
-        # declaration of the mlp ffi signatures
+
+        #----Declaration du MLP via ffi signatures----
         self.lib.mlp_create.argtypes = [ctypes.POINTER(ctypes.c_size_t), ctypes.c_size_t]
         self.lib.mlp_create.restype = ctypes.c_void_p
 
@@ -89,6 +91,36 @@ class RustLib:
 
         self.lib.mlp_free.argtypes = [ctypes.c_void_p]
         self.lib.mlp_free.restype = None
+
+
+        #----Declaration du modèle RBF + lloyd via ffi signatures----
+        self.lib.lloyd.argtypes = [ctypes.c_uint32,
+                                   ctypes.POINTER(ctypes.c_float),
+                                   ctypes.POINTER(ctypes.c_float),
+                                   ctypes.POINTER(ctypes.c_float),
+                                   ctypes.c_uint32,
+                                   ctypes.c_float,
+                                   ctypes.c_float,
+                                   ctypes.POINTER(ctypes.c_float)]
+        self.lib.lloyd.restype = None
+
+        self.lib.RBF_train.argtypes = [ctypes.c_float,
+                                       ctypes.POINTER(ctypes.c_float),
+                                       ctypes.c_uint32,
+                                       ctypes.POINTER(ctypes.c_float),
+                                       ctypes.c_uint32,
+                                       ctypes.POINTER(ctypes.c_float),
+                                       ctypes.POINTER(ctypes.c_float)]
+        self.lib.RBF_train.restype = None
+
+        self.lib.RBF_predict.argtypes = [
+            ctypes.c_float,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.c_float),
+            ctypes.POINTER(ctypes.c_float),
+            ctypes.POINTER(ctypes.c_float),
+        ]
+        self.lib.RBF_predict.restype = ctypes.c_float
 
 
 def _check_status(status: int, operation: str) -> None:
