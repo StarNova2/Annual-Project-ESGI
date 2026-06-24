@@ -123,6 +123,26 @@ class RustLib:
         self.lib.RBF_predict.restype = ctypes.c_float
 
 
+        # ----Declaration du modèle linéaire ----
+        class MyDroite(ctypes.Structure): _fields_ = [
+            ("a", ctypes.c_float),
+            ("b", ctypes.c_float),
+            ("c", ctypes.c_float),
+        ]
+        self.lib.initialisation_droite.restype = ctypes.POINTER(MyDroite)
+        self.lib.training.argtypes = [ctypes.c_float, ctypes.c_int32, ctypes.c_int32, MyDroite,
+                                 ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float)]
+        self.lib.training.restype = ctypes.POINTER(MyDroite)
+        self.lib.linear_classification_prediction.restype = ctypes.c_float
+        self.lib.linear_classification_prediction.argtypes = [
+            ctypes.c_float,
+            ctypes.c_float,
+            ctypes.c_float,
+            ctypes.c_float,
+            ctypes.c_float,
+            ctypes.c_float
+        ]
+
 def _check_status(status: int, operation: str) -> None:
     if status != 0:
         raise RuntimeError(f"{operation} failed with status {status}")
@@ -183,6 +203,15 @@ class LinearModelRust:
     def __del__(self) -> None:
         self.close()
 
+class LinearModel:
+    def __init__(self, entree_dim: int, pas_apprentissage: float = 0.01, library = None) -> None:
+        self.library = library or RustLib()
+        self.entree_dim = int(entree_dim)
+        self.MyDroite = self.library.lib.initialisation_droite()
+        if not self.MyDroite:
+            raise RuntimeError("Erreur création modèle linéaire")
+
+    #def entrainement(self, ):
 
 class OVRLinearClassifier:
     def __init__(
@@ -198,6 +227,7 @@ class OVRLinearClassifier:
         self.output_dim = int(output_dim)
         self.models = [
             LinearModelRust(self.input_dim, learning_rate=learning_rate, library=self.library)
+            #LinearModel(self.input_dim, learning_rate = learning_rate, library = self.library)
             for _ in range(self.output_dim)
         ]
 

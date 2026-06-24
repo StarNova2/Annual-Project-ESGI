@@ -12,14 +12,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4c5d3e73-0261-4473-86a7-005182c2da94" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/Annual-Project-ESGI.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Annual-Project-ESGI.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PythonProject/[Notebook]Cas_de_tests.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PythonProject/dataset_loader.py" beforeDir="false" afterPath="$PROJECT_DIR$/PythonProject/dataset_loader.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PythonProject/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/PythonProject/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PythonProject/run_dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/PythonProject/run_dataset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PythonProject/Test_modele.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/PythonProject/Test_modele.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PythonProject/rust_bridge.py" beforeDir="false" afterPath="$PROJECT_DIR$/PythonProject/rust_bridge.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rapport_modele_linear_Theo.md" beforeDir="false" afterPath="$PROJECT_DIR$/rapport_modele_linear_Theo.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib_classification/src/linear.rs" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/src/linear.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib_classification/src/linear_dataset.rs" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/src/linear_dataset.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,7 +74,7 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager" selected="Python.run_dataset">
+  <component name="RunManager" selected="Cargo.Test lib_classification">
     <configuration name="Test lib_classification" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="buildProfileId" value="test" />
       <option name="command" value="test --workspace" />
@@ -170,11 +167,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Python.run_dataset" />
-      </list>
-    </recent_temporary>
   </component>
   <component name="RustProjectSettings">
     <option name="toolchainHomeDirectory" value="$USER_HOME$/.cargo/bin" />
@@ -219,6 +211,8 @@
       <workItem from="1781709607066" duration="2971000" />
       <workItem from="1781865214179" duration="245000" />
       <workItem from="1781869938134" duration="12179000" />
+      <workItem from="1782245188251" duration="1042000" />
+      <workItem from="1782285033323" duration="10126000" />
     </task>
     <servers />
   </component>
