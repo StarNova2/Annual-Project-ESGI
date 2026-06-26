@@ -13,7 +13,7 @@ fn distance_euclidienne(x1: f32, y1:f32, x2:f32, y2:f32) -> f32{
 
 
 #[unsafe(no_mangle)]
-pub extern "C" fn lloyd(num_k: u32, env_x_min_max: *const f32, env_y_min_max: *const f32, ensemble_point: *const f32, len_point: u32,mouvement_max:f32, max_loop: f32, output: *mut f32)  {
+pub extern "C" fn lloyd(num_k: usize, env_x_min_max: *const f32, env_y_min_max: *const f32, ensemble_point: *const f32, len_point: usize,mouvement_max:f32, max_loop: f32, output: *mut f32)  {
     let mut rng = rand::rng();
     //list_cluster = coordonée du cluster (x, y) + somme des coorodnnée (x, y) + nombre de cooronée pour faire la moyenne (len)
     //--> Vec<(x_cluster, y_cluster, x_sum, y_sum, count)>
@@ -115,7 +115,7 @@ pub extern "C" fn lloyd(num_k: u32, env_x_min_max: *const f32, env_y_min_max: *c
 
 
 #[unsafe(no_mangle)]
-pub extern "C" fn RBF_train(gamma : f32, ensemble_point: *const f32, len_point: u32, list_cluster: *const f32, len_list_cluster: u32, ensemble_label: *const f32, output: *mut f32) {
+pub extern "C" fn RBF_train(gamma : f32, ensemble_point: *const f32, len_point: usize, list_cluster: *const f32, len_list_cluster: usize, ensemble_label: *const f32, output: *mut f32) {
     //convertion des pointeurs
     let data: &[f32] = unsafe { std::slice::from_raw_parts(ensemble_point, (len_point * 2) as usize) };
     let list_cluster: &[f32] = unsafe { std::slice::from_raw_parts(list_cluster, (len_list_cluster * 2) as usize) };
@@ -186,7 +186,7 @@ pub extern "C" fn RBF_train(gamma : f32, ensemble_point: *const f32, len_point: 
 
 
 #[unsafe(no_mangle)]
-pub extern "C" fn RBF_predict (gamma:f32, num_k:u32, cluster:*const f32, point_entre: *const f32, poids: *const f32) -> f32{
+pub extern "C" fn RBF_predict (gamma:f32, num_k:usize, cluster:*const f32, point_entre: *const f32, poids: *const f32) -> f32{
     //Convertion des pointeurs
     let liste_cluster = unsafe{std::slice::from_raw_parts(cluster, (num_k*2) as usize)};
     let data = unsafe{std::slice::from_raw_parts(point_entre, 2)};

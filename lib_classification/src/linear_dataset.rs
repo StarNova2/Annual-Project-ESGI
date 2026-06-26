@@ -53,30 +53,35 @@ impl LinearModel {
         Some(score)
     }
 
-    fn entrainement(&mut self, entree: &[f32], liste_label: &[f32], sample_count: usize, n_loop: usize) -> bool {
-        if sample_count == 0
-            || entree.len() != sample_count * self.entree_dim
-            || targets.len() != sample_count
+    fn entrainement(&mut self, nb_donnee: &[f32], liste_label: &[f32], nb_pixel_image: usize, epoch: usize) -> bool {
+        if nb_pixel_image == 0
+            || nb_donnee.len() != nb_pixel_image * self.entree_dim
+            || liste_label.len() != nb_pixel_image
         {
             return false;
         }
 
         // training on random samples
         let mut rng = rand::rng();
-        for _ in 0..n_loop {
-            let k = rng.random_range(0..sample_count);
-            let start = k * self.entree_dim;
-            let features = &inputs[start..start + self.entree_dim];
-            let yk = if targets[k] >= 0.0 { 1.0 } else { -1.0 };
-            let gxk = if self.prediction(features).unwrap_or(-1.0) >= 0.0 {
-                1.0
-            } else {
-                -1.0
-            };
 
-            self.biais += self.pas_apprentissage * (yk - gxk);
+        for _ in 0..epoch {
+            let k = rng.random_range(0..nb_pixel_image);
+            let start = k * self.entree_dim;
+            let features = &nb_donnee[start..start + self.entree_dim];
+
+
+            let yk = if liste_label[k] >= 0.0 { 1.0 } else { -1.0 };
+            let gxk = if self.prediction(features).unwrap_or(0.0) >= 0.0 {1.0} else {-1.0};
+
+            /*self.biais += self.pas_apprentissage * (yk - gxk);
             for (petit_poid, &feature) in self.poids.iter_mut().zip(features.iter()) {
                 *petit_poid += self.pas_apprentissage * feature * (yk - gxk);
+            }*/
+
+            for i in 0..self.poids.len() {
+
+                let correction = self.pas_apprentissage * features[i] * (yk - gxk);
+                self.poids[i] += correction;
             }
         }
 
