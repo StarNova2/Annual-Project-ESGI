@@ -5,21 +5,25 @@
 L'objectif de cette partie est de tester nos modèles Rust sur notre dataset de screenshots de jeux vidéo.
 
 Classes utilisées :
+
 - FPS
 - METROIDVANIA
 - MOBA
 
 Modèles testés :
-- modèle linéaire multi-classe 
+
+- modèle linéaire multi-classe
 - PMC / MLP
 
 ## Protocole
 
 Découpage du dataset :
+
 - `80%` train
 - `20%` test
 
 Le script utilisé pour lancer les tests est :
+
 - `PythonProject/run_dataset.py`
 
 ## Commandes utilisées
@@ -44,6 +48,7 @@ py .\run_dataset.py --width 32 --height 18 --rgb
 ### Test 1
 
 Configuration :
+
 - taille : `8x6`
 - mode : `grayscale`
 
@@ -54,6 +59,7 @@ Screenshot du terminal :
 ### Test 2
 
 Configuration :
+
 - taille : `8x6`
 - mode : `RGB`
 
@@ -64,9 +70,9 @@ Screenshot du terminal :
 ### Test 3
 
 Configuration :
+
 - taille : `16x16`
 - mode : `grayscale`
-
 
 Screenshot du terminal :
 
@@ -75,6 +81,7 @@ Screenshot du terminal :
 ### Test 4
 
 Configuration :
+
 - taille : `16x16`
 - mode : `RGB`
 
@@ -85,6 +92,7 @@ Screenshot du terminal :
 ### Test 5
 
 Configuration :
+
 - taille : `32x18`
 - mode : `grayscale`
 
@@ -95,6 +103,7 @@ Screenshot du terminal :
 ### Test 6
 
 Configuration :
+
 - taille : `32x18`
 - mode : `RGB`
 

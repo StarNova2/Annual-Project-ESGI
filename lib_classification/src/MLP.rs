@@ -1,7 +1,7 @@
 use libm::{self, pow};
 use rand::{prelude::*, random_range};
 
-pub struct MLP{
+pub struct Mlp{
     d: Vec<i32>,
     length: usize,
     weights: Vec<Vec<Vec<f64>>>,
@@ -9,7 +9,10 @@ pub struct MLP{
     deltas: Vec<Vec<f64>>
 }
 
-impl MLP{
+impl Mlp{
+    
+    // MLP INITIALIZATION
+
     pub fn new(_inputs_size: i32,hidden_layers: Vec<i32>,_output_size: i32,)->Self{
         // creation of the list of inputs
         let mut d: Vec<i32> = Vec::new();
@@ -70,6 +73,8 @@ impl MLP{
         Self { d, length, weights, values, deltas }
     }
 
+    // GRADIENT PROPAGATION
+
     pub fn propagation(&mut self,
         input: Vec<f64>,
         classification: bool){
@@ -95,11 +100,15 @@ impl MLP{
         }
     }
 
+    // VALUE PREDICTION (using propagation on a single element)
+
     pub fn prediction(&mut self, input: Vec<f64>, classification: bool) -> &[f64]{
         self.propagation(input, classification);
         let total = &self.values[self.length][1..];
         return total;
     }
+
+    // MODEL TRAINING
 
     pub fn training(&mut self,
         dataset_inputs: Vec<Vec<f64>>,
@@ -154,7 +163,4 @@ impl MLP{
     pub fn output_size(&self) -> usize {
         self.d[self.length].try_into().unwrap()
     }
-}
-
-fn main(){
 }
