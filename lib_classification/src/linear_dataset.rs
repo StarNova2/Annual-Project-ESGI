@@ -44,20 +44,12 @@ impl LinearModel {
         }
 
 
-        /*Some(
-            self.poids
-                .iter()
-                .zip(features.iter())
-                .fold(self.biais, |total, (&weight, &feature)| total + weight * feature),
-        )*/
+        //Some(self.poids.iter().zip(features.iter()).fold(self.biais, |total, (&weight, &feature)| total + weight * feature))
         Some(score)
     }
 
     fn entrainement(&mut self, nb_donnee: &[f32], liste_label: &[f32], nb_pixel_image: usize, epoch: usize) -> bool {
-        if nb_pixel_image == 0
-            || nb_donnee.len() != nb_pixel_image * self.entree_dim
-            || liste_label.len() != nb_pixel_image
-        {
+        if nb_pixel_image == 0 || nb_donnee.len() != nb_pixel_image * self.entree_dim || liste_label.len() != nb_pixel_image {
             return false;
         }
 

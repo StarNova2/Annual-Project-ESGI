@@ -96,6 +96,7 @@ pub extern "C" fn lloyd(num_k: usize, env_x_min_max: *const f32, env_y_min_max: 
             }
 
         }
+
         count_boucle_max += 1;
         if count_boucle_max > max_loop as i32 {
             mouvement = false;
