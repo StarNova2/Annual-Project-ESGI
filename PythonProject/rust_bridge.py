@@ -38,7 +38,8 @@ class RustLib:
         self._configure_signatures()
 
     def _configure_signatures(self) -> None:
-        # declaration of the linear ffi signatures
+
+        #----Declaration du modèle linéaire via ffi signatures----
         self.lib.linear_model_create.argtypes = [ctypes.c_size_t, ctypes.c_float]
         self.lib.linear_model_create.restype = ctypes.c_void_p
 
@@ -61,7 +62,8 @@ class RustLib:
         self.lib.linear_model_free.argtypes = [ctypes.c_void_p]
         self.lib.linear_model_free.restype = None
 
-        # declaration of the mlp ffi signatures
+
+        #----Declaration du MLP via ffi signatures----
         self.lib.mlp_create.argtypes = [ctypes.POINTER(ctypes.c_size_t), ctypes.c_size_t]
         self.lib.mlp_create.restype = ctypes.c_void_p
 
@@ -90,6 +92,57 @@ class RustLib:
         self.lib.mlp_free.argtypes = [ctypes.c_void_p]
         self.lib.mlp_free.restype = None
 
+        # ----Declaration du modèle RBF + lloyd via ffi signatures----
+        self.lib.creation_RBF_model.argtypes = [ctypes.c_size_t, ctypes.c_size_t]
+        self.lib.creation_RBF_model.restype = ctypes.c_void_p
+
+        self.lib.entrainement_RBF_model.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_float),
+            ctypes.POINTER(ctypes.c_float),
+            ctypes.c_size_t,    # sample_count
+            ctypes.c_float,     # mouvement_max
+            ctypes.c_float,     # max_loop
+            ctypes.c_float      # gamma
+        ]
+
+        self.lib.entrainement_RBF_model.restype = ctypes.c_int32
+
+        self.lib.RBF_model_predict.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_float),
+            ctypes.c_size_t
+        ]
+        self.lib.RBF_model_predict.restype = ctypes.c_float
+
+        self.lib.RBF_model_free.argtypes = [ctypes.c_void_p]
+        self.lib.RBF_model_free.restype = None
+
+
+
+
+
+
+
+        # ----Declaration du modèle linéaire ----
+        class MyDroite(ctypes.Structure): _fields_ = [
+            ("a", ctypes.c_float),
+            ("b", ctypes.c_float),
+            ("c", ctypes.c_float),
+        ]
+        self.lib.initialisation_droite.restype = ctypes.POINTER(MyDroite)
+        self.lib.training.argtypes = [ctypes.c_float, ctypes.c_int32, ctypes.c_int32, MyDroite,
+                                 ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float)]
+        self.lib.training.restype = ctypes.POINTER(MyDroite)
+        self.lib.linear_classification_prediction.restype = ctypes.c_float
+        self.lib.linear_classification_prediction.argtypes = [
+            ctypes.c_float,
+            ctypes.c_float,
+            ctypes.c_float,
+            ctypes.c_float,
+            ctypes.c_float,
+            ctypes.c_float
+        ]
 
 def _check_status(status: int, operation: str) -> None:
     if status != 0:
@@ -152,6 +205,17 @@ class LinearModelRust:
         self.close()
 
 
+
+class LinearModel:
+    def __init__(self, entree_dim: int, pas_apprentissage: float = 0.01, library = None) -> None:
+        self.library = library or RustLib()
+        self.entree_dim = int(entree_dim)
+        self.MyDroite = self.library.lib.initialisation_droite()
+        if not self.MyDroite:
+            raise RuntimeError("Erreur création modèle linéaire")
+
+    #def entrainement(self, ):
+
 class OVRLinearClassifier:
     def __init__(
         self,
@@ -166,6 +230,7 @@ class OVRLinearClassifier:
         self.output_dim = int(output_dim)
         self.models = [
             LinearModelRust(self.input_dim, learning_rate=learning_rate, library=self.library)
+            #LinearModel(self.input_dim, learning_rate = learning_rate, library = self.library)
             for _ in range(self.output_dim)
         ]
 
@@ -280,6 +345,110 @@ class MLPRust:
     def close(self) -> None:
         if getattr(self, "_handle", None):
             self.library.lib.mlp_free(self._handle)
+            self._handle = None
+
+    def __del__(self) -> None:
+        self.close()
+
+class OVRRBF:
+
+    def __init__(self, input_dim, nb_cluster, output_dim, library=None):
+        self.input_dim = int(input_dim)   # ← manquait
+        self.output_dim = int(output_dim)
+        self.library = library
+        self.models = [
+            RBFModelRust(
+                input_dim=input_dim,
+                nb_cluster=nb_cluster,
+                library=library
+            )
+            for _ in range(output_dim)
+        ]
+
+    def entrainement(self, x, y, mouvement_max, max_loop, gamma):
+        x = _as_float32(x)
+        y = _as_float32(y)  # ← PAS de .reshape(-1) ici
+
+        for class_index, model in enumerate(self.models):
+            y_binary = y[:, class_index]  # ← sélection par colonne
+            y_binary = np.where(y_binary > 0, 1.0, -1.0).astype(np.float32)
+            model.entrainement(x, y_binary, mouvement_max, max_loop, gamma)
+
+    def prediction(self, x):
+        scores = []
+        for model in self.models:
+            score = model.prediction(x)
+            scores.append(score)
+        scores = np.stack(scores, axis=1)  # (n_samples, output_dim)
+
+        winners = np.argmax(scores, axis=1)
+
+        # Conversion en one-hot -1/+1
+        labels = -np.ones((scores.shape[0], self.output_dim), dtype=np.float32)
+        labels[np.arange(scores.shape[0]), winners] = 1.0
+        return labels
+
+    def close(self):
+        for model in getattr(self, "models", []):
+            model.close()
+
+    def __del__(self):
+        self.close()
+
+
+class RBFModelRust:
+
+    def __init__(self, input_dim: int, nb_cluster: int, library: RustLib | None = None) -> None:
+        self.library = library or RustLib()
+        self.input_dim = int(input_dim)
+        self._handle = self.library.lib.creation_RBF_model(
+            ctypes.c_size_t(self.input_dim),
+            ctypes.c_size_t(int(nb_cluster)),
+        )
+        if not self._handle:
+            raise RuntimeError("Echec lors de la création du modèle RBF")
+
+    def entrainement(self, x: np.ndarray, y: np.ndarray, mouvement_max: float, max_loop: float, gamma: float) -> None:
+        x = _as_float32(x)
+        y = _as_float32(y).reshape(-1)
+        if x.ndim != 2 or x.shape[1] != self.input_dim:
+            raise ValueError("x must be shaped (n_samples, input_dim)")
+        if y.shape[0] != x.shape[0]:
+            raise ValueError("y must contain one target per sample")
+
+        status = self.library.lib.entrainement_RBF_model(
+            self._handle,
+            x.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
+            y.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
+            ctypes.c_size_t(x.shape[0]),
+            ctypes.c_float(float(mouvement_max)),
+            ctypes.c_float(float(max_loop)),
+            ctypes.c_float(float(gamma))
+        )
+        _check_status(status, "RBF_model_train")
+
+    def prediction(self, x: np.ndarray) -> np.ndarray:
+        x = _as_float32(x)
+        if x.ndim == 1:
+            x = x.reshape(1, -1)
+        if x.ndim != 2 or x.shape[1] != self.input_dim:
+            raise ValueError("x must be shaped (n_samples, input_dim)")
+
+        predictions = np.zeros((x.shape[0],), dtype=np.float32)
+        for index, row in enumerate(x):
+            predictions[index] = self.library.lib.RBF_model_predict(
+                self._handle,
+                row.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
+                row.shape[0],
+            )
+        return predictions
+
+    def prediction_labels(self, x: np.ndarray) -> np.ndarray:
+        return np.where(self.prediction(x) >= 0.0, 1.0, -1.0).astype(np.float32)
+
+    def close(self) -> None:
+        if getattr(self, "_handle", None):
+            self.library.lib.RBF_model_free(self._handle)
             self._handle = None
 
     def __del__(self) -> None:
