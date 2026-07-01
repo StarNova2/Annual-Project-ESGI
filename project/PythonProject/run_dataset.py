@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 
 from dataset_loader import DEFAULT_DATASET_ROOT, load_labeled_image_dataset, stratified_split
-from rust_bridge import MLPRust, OVRLinearClassifier, TaskMode
+from project.PythonProject.rust_bridge import MLPRust, OVRLinearClassifier, TaskMode
 
 
 def parse_args() -> argparse.Namespace:

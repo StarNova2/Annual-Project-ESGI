@@ -211,7 +211,7 @@ impl RBFModel {
 
         let phi_t_phi = &phi_t * &phi;
 
-        ///let llt = phi_t_phi.llt(Side::Lower).unwrap();
+        //let llt = phi_t_phi.llt(Side::Lower).unwrap();
 
         let llt = match phi_t_phi.llt(Side::Lower) {
             Ok(decomp) => decomp,

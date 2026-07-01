@@ -11,7 +11,6 @@ DEFAULT_DATASET_ROOT = Path(
     r"G:\.shortcut-targets-by-id\1iAfi-pFGoqzi63RuDrtZzG3SU73_RGLr\Dataset projet annuel"
 )
 DEFAULT_CLASS_NAMES = ("FPS", "METROIDVANIA", "MOBA")
-#DEFAULT_CLASS_NAMES = ("FPS", "METROIDVANIA")
 SUPPORTED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".bmp", ".webp"}
 
 
