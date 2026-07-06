@@ -116,8 +116,10 @@ impl Mlp{
         training_step: i32,
         learning_rate: f64,
         classification: bool){
+
+        let input_size_int: i32 = i32::try_from(self.input_size()).unwrap();
         
-        for _ in 0..training_step{
+        for train_index in 0..training_step{
             let k = random_range(0..dataset_inputs.len());
             let inputs_k = &dataset_inputs[k];
             let y_k = &dataset_expected_output[k];
@@ -152,6 +154,11 @@ impl Mlp{
                         self.weights[l][i_index][j_index] -= learning_rate * self.values[l-1][i_index] * self.deltas[l][j_index];                        
                     }
                 }
+            }
+            let train_index_usize: usize = train_index.try_into().unwrap();
+            if train_index % input_size_int == 0{
+                // calculer loss / accuracy
+                let z:i32 = 0;
             }
         }
     }
