@@ -38,7 +38,7 @@ class SplitDataset:
 def load_labeled_image_dataset(
     root: Path | str = DEFAULT_DATASET_ROOT,
     class_names: tuple[str, ...] = DEFAULT_CLASS_NAMES,
-    image_size: tuple[int, int] = (8, 6),
+    image_size: tuple[int, int] = (int(40 * 16/9), 40),
     grayscale: bool = True,
 ) -> Dataset:
     # creation of the dataset lists
@@ -101,10 +101,10 @@ def stratified_split(
     seed: int = 42,
 ) -> SplitDataset:
     if not 0.0 < test_ratio < 1.0:
-        raise ValueError("test_ratio must be between 0 and 1")
+        raise ValueError("test_ratiodoit être entre 0.0 et 1.0")
 
     # creation of the split indices
-    rng = np.random.default_rng(seed)
+    rng = np.random.default_rng(seed) #Seed intéressante pour reproduire les même résultats
     train_indices: list[int] = []
     test_indices: list[int] = []
 
