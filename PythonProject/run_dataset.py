@@ -20,8 +20,8 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_DATASET_ROOT,
         help="Root directory containing FPS, METROIDVANIA and MOBA subfolders.",
     )
-    parser.add_argument("--width", type=int, default=8, help="Resized image width.")
-    parser.add_argument("--height", type=int, default=6, help="Resized image height.")
+    parser.add_argument("--width", type=int, default=int(40 * 16/9), help="Resized image width.")
+    parser.add_argument("--height", type=int, default=40, help="Resized image height.")
     parser.add_argument("--grayscale", dest="grayscale", action="store_true", help="Use grayscale images.")
     parser.add_argument("--rgb", dest="grayscale", action="store_false", help="Use RGB images.")
     parser.add_argument("--test-ratio", type=float, default=0.2, help="Fraction used for test split.")

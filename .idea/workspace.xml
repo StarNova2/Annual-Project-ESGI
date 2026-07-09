@@ -12,15 +12,36 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4c5d3e73-0261-4473-86a7-005182c2da94" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/PythonProject/Extra/Quizz_gray_resize.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PythonProject/[Notebook] Cas de tests RBF.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PythonProject/[Notebook] Cas de tests linear.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PythonProject/[Notebook] Test_modele.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PythonProject/save_model/model_linear1.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PythonProject/save_model/model_rbf2.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib_classification/src/RBF.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib_classification/src/RBF_database.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/presentation_resume.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PythonProject/[Notebook] Cas de tests.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/PythonProject/[Notebook] Cas de tests.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PythonProject/dataset_loader.py" beforeDir="false" afterPath="$PROJECT_DIR$/PythonProject/dataset_loader.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PythonProject/run_dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/PythonProject/run_dataset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PythonProject/rust_bridge.py" beforeDir="false" afterPath="$PROJECT_DIR$/PythonProject/rust_bridge.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Rapport/rapport_dataset.md" beforeDir="false" afterPath="$PROJECT_DIR$/Rapport/rapport_dataset.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Rendu.md" beforeDir="false" afterPath="$PROJECT_DIR$/Rendu.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib_classification/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/Cargo.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib_classification/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib_classification/src/MLP.rs" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/src/MLP.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib_classification/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/src/lib.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib_classification/src/linear.rs" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/src/linear.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib_classification/src/linear_dataset.rs" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/src/linear_dataset.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib_classification/src/mlp_ffi.rs" beforeDir="false" afterPath="$PROJECT_DIR$/lib_classification/src/mlp_ffi.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rapport_modele_linear_Theo.md" beforeDir="false" afterPath="$PROJECT_DIR$/rapport_modele_linear_Theo.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="RsBuildProfile:test" />
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -45,26 +66,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.rust.reset.selective.auto.import&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;ai.playground.ignore.import.keys.banner.in.settings&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;cas__test&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/theot/Documents/rust_prog/Annual-Project-ESGI&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;org.rust.cargo.project.model.PROJECT_DISCOVERY&quot;: &quot;true&quot;,
-    &quot;org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon&quot;: &quot;&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.main.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.rust.reset.selective.auto.import": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "ai.playground.ignore.import.keys.banner.in.settings": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "Merging main",
+    "last_opened_file_path": "C:/Users/theot/Documents/rust_prog/Annual-Project-ESGI",
+    "nodejs_package_manager_path": "npm",
+    "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true",
+    "org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon": "",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
-  <component name="RunManager" selected="Cargo.Test lib_classification">
+}]]></component>
+  <component name="RunManager" selected="Python.main">
     <configuration name="Test lib_classification" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="buildProfileId" value="test" />
       <option name="command" value="test --workspace" />
@@ -97,6 +119,7 @@
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="DEBUG_JUST_MY_CODE" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="RUN_TOOL" value="" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PythonProject/main.py" />
@@ -115,8 +138,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-PY-253.29346.308" />
-        <option value="bundled-python-sdk-ca5e2b39c7df-6e1f45a539f7-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-253.29346.308" />
+        <option value="bundled-python-sdk-b63d5a1f7c97-b61e75351b1f-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-261.22158.340" />
       </set>
     </attachedChunks>
   </component>
@@ -141,6 +163,7 @@
       <workItem from="1775484252841" duration="774000" />
       <workItem from="1775485495666" duration="2833000" />
       <workItem from="1775493160588" duration="4801000" />
+      <workItem from="1783606147111" duration="1121000" />
     </task>
     <servers />
   </component>
