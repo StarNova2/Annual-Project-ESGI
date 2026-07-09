@@ -10,3 +10,4 @@ crate-type = ["cdylib"]
 rand = "0.10.0"
 libm = "0.2"
 faer = "0.24"
+rand_distr = "0.6.0"

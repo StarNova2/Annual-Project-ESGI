@@ -3,6 +3,7 @@ from __future__ import annotations
 import ctypes
 from enum import IntEnum
 from pathlib import Path
+import json
 
 import numpy as np
 
@@ -64,7 +65,7 @@ class RustLib:
 
 
         #----Declaration du MLP via ffi signatures----
-        self.lib.mlp_create.argtypes = [ctypes.POINTER(ctypes.c_size_t), ctypes.c_size_t]
+        self.lib.mlp_create.argtypes = [ctypes.POINTER(ctypes.c_size_t), ctypes.c_size_t, ctypes.c_size_t]
         self.lib.mlp_create.restype = ctypes.c_void_p
 
         self.lib.mlp_train.argtypes = [
@@ -268,6 +269,7 @@ class MLPRust:
         layer_sizes: list[int],
         learning_rate: float = 0.01,
         task_mode: TaskMode = TaskMode.CLASSIFICATION,
+        seed: int = 42,
         library: RustLib | None = None,
     ) -> None:
         if len(layer_sizes) < 2:
@@ -282,7 +284,7 @@ class MLPRust:
         self.task_mode = TaskMode(task_mode)
 
         layer_array = (ctypes.c_size_t * len(self.layer_sizes))(*self.layer_sizes)
-        self._handle = self.library.lib.mlp_create(layer_array, len(self.layer_sizes))
+        self._handle = self.library.lib.mlp_create(layer_array, len(self.layer_sizes),seed)
         if not self._handle:
             raise RuntimeError("Failed to create Rust MLP")
 
@@ -349,6 +351,43 @@ class MLPRust:
 
     def __del__(self) -> None:
         self.close()
+        
+    def save(self, path: str | Path, extra_hparams: dict | None = None) -> None:
+        data = {
+            "model_type": "mlp",
+            "parameters": {
+                "layer_sizes": self.layer_sizes,
+                "learning_rate": self.learning_rate,
+                "task_mode": self.task_mode,
+                "seed": self.seed,
+                **(extra_hparams or {}),
+            },
+            "class_names": list(getattr(self, "class_names", range(len(self.layer_sizes[-1])))),
+            "submodels": [
+                {"poids": self.library.get_poids().tolist(), "biais": self.library.get_deltas()}
+            ],
+        }
+        Path(path).write_text(json.dumps(data, indent=2))
+        
+    @classmethod
+    def load(cls, path: str | Path) -> "MLPRust":
+        data = json.loads(Path(path).read_text())
+        if data["model_type"] != "mlp":
+            raise ValueError(f"Fichier incompatible : model_type={data['model_type']!r}")
+        hp = data["parameters"]
+        
+        model = cls(
+            layers = hp["layer_sizes"],
+            learning_rate=hp["learning_rate"],
+            task_mode = hp["task_mode"],
+            seed=hp.get("seed", 42)
+        )
+
+        for model, submodel_data in zip(model.models, data["submodels"]):
+            weights = np.array(submodel_data["poids"], dtype=np.float32)
+            model.set_state(weights, submodel_data["biais"])
+        model.class_names = tuple(data["class_names"])
+        return model
 
 class OVRRBF:
 

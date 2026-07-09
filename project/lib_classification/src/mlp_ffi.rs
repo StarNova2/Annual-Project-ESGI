@@ -1,7 +1,7 @@
 use crate::mlp::Mlp;
 
 #[unsafe(no_mangle)]
-pub extern "C" fn mlp_create(layer_sizes: *const usize, layer_count: usize) -> *mut Mlp {
+pub extern "C" fn mlp_create(layer_sizes: *const usize, layer_count: usize, seed: u64) -> *mut Mlp {
     if layer_sizes.is_null() || layer_count < 2 {
         return std::ptr::null_mut();
     }
@@ -13,14 +13,14 @@ pub extern "C" fn mlp_create(layer_sizes: *const usize, layer_count: usize) -> *
     }
 
     // creation of the mlp dimensions
-    let input_size = layer_sizes[0] as i32;
-    let output_size = layer_sizes[layer_count - 1] as i32;
-    let hidden_layers: Vec<i32> = layer_sizes[1..layer_count - 1]
+    let input_size = layer_sizes[0] as usize;
+    let output_size = layer_sizes[layer_count - 1] as usize;
+    let hidden_layers: Vec<usize> = layer_sizes[1..layer_count - 1]
         .iter()
-        .map(|&size| size as i32)
+        .map(|&size| size)
         .collect();
 
-    Box::into_raw(Box::new(Mlp::new(input_size, hidden_layers, output_size)))
+    Box::into_raw(Box::new(Mlp::new(input_size, hidden_layers, output_size, seed)))
 }
 
 #[unsafe(no_mangle)]
@@ -84,7 +84,7 @@ pub extern "C" fn mlp_predict(
     let output_size = model.output_size();
     let inputs = unsafe { std::slice::from_raw_parts(inputs, input_size) };
     let input: Vec<f64> = inputs.iter().map(|&value| value as f64).collect();
-    let prediction = model.prediction(input, is_classification != 0);
+    let prediction = model.prediction(&input, is_classification != 0);
     let output = unsafe { std::slice::from_raw_parts_mut(output, output_size) };
 
     for (target, value) in output.iter_mut().zip(prediction.iter()) {
