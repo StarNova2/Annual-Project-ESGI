@@ -6,9 +6,9 @@ use rand::rngs::StdRng;
 pub struct Mlp{
     d: Vec<usize>,
     length: usize,
-    weights: Vec<Vec<Vec<f64>>>,
+    pub weights: Vec<Vec<Vec<f64>>>,
     values: Vec<Vec<f64>>,
-    deltas: Vec<Vec<f64>>,
+    pub deltas: Vec<Vec<f64>>,
     pub loss_history: Vec<f64>,
     pub accuracy_history: Vec<f64>,
     epoch: i32
@@ -219,17 +219,28 @@ impl Mlp{
         correct as f64 / inputs.len() as f64
         }
 
+    pub fn flattened_weights(&self) -> Vec<f64> {
+        self.weights
+        .iter()
+        .flat_map(|layer| {
+            layer.iter().flat_map(|neuron| neuron.iter().copied())
+        })
+        .collect()
+    }
+
+    pub fn flattened_deltas(&self) ->Vec<f64> {
+        self.deltas
+        .iter()
+        .flat_map(|neuron| neuron.iter().copied())
+        .collect()
+    }
+
     pub fn input_size(&self) -> usize {
         self.d[0]
     }
 
     pub fn output_size(&self) -> usize {
         self.d[self.length]
-    }
-
-    
-    fn get_weights(&mut self)->Vec<Vec<Vec<f64>>>{
-        &self.weights        
     }
 }
 
