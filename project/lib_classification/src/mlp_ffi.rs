@@ -104,6 +104,66 @@ pub extern "C" fn mlp_output_dim(model: *const Mlp) -> usize {
 }
 
 #[unsafe(no_mangle)]
+pub extern "C" fn mlp_get_weights(
+    model: *const Mlp,
+    len: *mut usize,
+) -> *mut f64 {
+    if model.is_null() || len.is_null() {
+        return std::ptr::null_mut();
+    }
+
+    let weights = unsafe { (&*model).flattened_weights() };
+
+    unsafe {
+        *len = weights.len();
+    }
+
+    let boxed = weights.into_boxed_slice();
+    Box::into_raw(boxed) as *mut f64
+}
+
+#[unsafe(no_mangle)]
+pub extern "C" fn mlp_free_weights(ptr: *mut f64, len: usize) {
+    if ptr.is_null() {
+        return;
+    }
+
+    unsafe {
+        let _ = Vec::from_raw_parts(ptr, len, len);
+    }
+}
+
+#[unsafe(no_mangle)]
+pub extern "C" fn mlp_get_deltas(
+    model: *const Mlp,
+    len: *mut usize,
+) -> *mut f64 {
+    if model.is_null() || len.is_null() {
+        return std::ptr::null_mut();
+    }
+
+    let deltas = unsafe { (&*model).flattened_deltas() };
+
+    unsafe {
+        *len = deltas.len();
+    }
+
+    let boxed = deltas.into_boxed_slice();
+    Box::into_raw(boxed) as *mut f64
+}
+
+#[unsafe(no_mangle)]
+pub extern "C" fn mlp_free_deltas(ptr: *mut f64, len: usize) {
+    if ptr.is_null() {
+        return;
+    }
+
+    unsafe {
+        let _ = Vec::from_raw_parts(ptr, len, len);
+    }
+}
+
+#[unsafe(no_mangle)]
 pub extern "C" fn mlp_free(model: *mut Mlp) {
     if model.is_null() {
         return;

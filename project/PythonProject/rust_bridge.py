@@ -353,6 +353,16 @@ class MLPRust:
         self.close()
         
     def save(self, path: str | Path, extra_hparams: dict | None = None) -> None:
+        length = ctypes.c_size_t()
+
+        ptr = self.lib.mlp_get_weights(self._handle, ctypes.byref(length))
+        weights = np.ctypeslib.as_array(ptr, shape=(length.value,)).copy()
+        self.lib.mlp_free_weights(ptr, length.value)
+        
+        ptr = self.lib.mlp_get_deltas(self._handle, ctypes.byref(length))
+        deltas = np.ctypeslib.as_array(ptr, shape=(length.value,)).copy()
+        self.lib.mlp_free_deltas(ptr, length.value)
+        
         data = {
             "model_type": "mlp",
             "parameters": {
@@ -364,7 +374,7 @@ class MLPRust:
             },
             "class_names": list(getattr(self, "class_names", range(len(self.layer_sizes[-1])))),
             "submodels": [
-                {"poids": self.library.get_poids().tolist(), "biais": self.library.get_deltas()}
+                {"poids": weights.tolist(), "deltas": deltas.tolist()}
             ],
         }
         Path(path).write_text(json.dumps(data, indent=2))
