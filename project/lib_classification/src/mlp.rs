@@ -228,11 +228,19 @@ impl Mlp{
         .collect()
     }
 
-    pub fn flattened_deltas(&self) ->Vec<f64> {
-        self.deltas
-        .iter()
-        .flat_map(|neuron| neuron.iter().copied())
-        .collect()
+    pub fn set_flattened_weights(&mut self, values: &[f64]) {
+        let mut k = 0;
+
+        for layer in &mut self.weights {
+            for neuron in layer {
+                for weight in neuron {
+                    *weight = values[k];
+                    k += 1;
+                }
+            }
+        }
+
+        assert_eq!(k, values.len());
     }
 
     pub fn input_size(&self) -> usize {

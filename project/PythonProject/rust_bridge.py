@@ -90,6 +90,30 @@ class RustLib:
         self.lib.mlp_output_dim.argtypes = [ctypes.c_void_p]
         self.lib.mlp_output_dim.restype = ctypes.c_size_t
 
+        self.lib.mlp_get_weights.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_size_t),
+        ]
+        self.lib.mlp_get_weights.restype = ctypes.POINTER(ctypes.c_double)
+
+        self.lib.mlp_free_weights.argtypes = [
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_size_t,
+        ]
+
+        self.lib.mlp_set_weights.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_size_t,
+        ]
+        self.lib.mlp_set_weights.restype = ctypes.c_int32
+        
+        self.lib.mlp_get_loss_history.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_size_t)]
+        self.lib.mlp_get_loss_history.restype = ctypes.POINTER(ctypes.c_double)
+
+        self.lib.mlp_free_loss_history.argtypes = [ctypes.POINTER(ctypes.c_double), ctypes.c_size_t]
+        self.lib.mlp_free_loss_history.restype = None
+
         self.lib.mlp_free.argtypes = [ctypes.c_void_p]
         self.lib.mlp_free.restype = None
 
@@ -118,12 +142,6 @@ class RustLib:
 
         self.lib.RBF_model_free.argtypes = [ctypes.c_void_p]
         self.lib.RBF_model_free.restype = None
-
-
-
-
-
-
 
         # ----Declaration du modèle linéaire ----
         class MyDroite(ctypes.Structure): _fields_ = [
@@ -282,6 +300,7 @@ class MLPRust:
         self.output_dim = self.layer_sizes[-1]
         self.learning_rate = float(learning_rate)
         self.task_mode = TaskMode(task_mode)
+        self.seed = seed
 
         layer_array = (ctypes.c_size_t * len(self.layer_sizes))(*self.layer_sizes)
         self._handle = self.library.lib.mlp_create(layer_array, len(self.layer_sizes),seed)
@@ -343,6 +362,26 @@ class MLPRust:
         labels = -np.ones_like(predictions)
         labels[np.arange(predictions.shape[0]), winners] = 1.0
         return labels.astype(np.float32)
+    
+    def get_loss_history(self) -> np.ndarray:
+        if self._handle is None:
+            raise ValueError("Model is closed.")
+        
+        length = ctypes.c_size_t(0)
+        ptr = self.library.lib.mlp_get_loss_history(self._handle, ctypes.byref(length))
+        
+        if not ptr:
+            return np.array([], dtype=np.float64)
+        
+        # Conversion du pointeur brut en tableau numpy
+        size = length.value
+        buffer = ctypes.string_at(ptr, size * ctypes.sizeof(ctypes.c_double))
+        loss_array = np.frombuffer(buffer, dtype=np.float64).copy()
+        
+        # Libération de la mémoire allouée par Rust
+        self.library.lib.mlp_free_loss_history(ptr, size)
+        
+        return loss_array
 
     def close(self) -> None:
         if getattr(self, "_handle", None):
@@ -355,48 +394,53 @@ class MLPRust:
     def save(self, path: str | Path, extra_hparams: dict | None = None) -> None:
         length = ctypes.c_size_t()
 
-        ptr = self.lib.mlp_get_weights(self._handle, ctypes.byref(length))
+        ptr = self.library.lib.mlp_get_weights(self._handle, ctypes.byref(length))
         weights = np.ctypeslib.as_array(ptr, shape=(length.value,)).copy()
-        self.lib.mlp_free_weights(ptr, length.value)
-        
-        ptr = self.lib.mlp_get_deltas(self._handle, ctypes.byref(length))
-        deltas = np.ctypeslib.as_array(ptr, shape=(length.value,)).copy()
-        self.lib.mlp_free_deltas(ptr, length.value)
+        self.library.lib.mlp_free_weights(ptr, length.value)
         
         data = {
             "model_type": "mlp",
             "parameters": {
                 "layer_sizes": self.layer_sizes,
                 "learning_rate": self.learning_rate,
-                "task_mode": self.task_mode,
+                "task_mode": int(self.task_mode),
                 "seed": self.seed,
                 **(extra_hparams or {}),
             },
-            "class_names": list(getattr(self, "class_names", range(len(self.layer_sizes[-1])))),
-            "submodels": [
-                {"poids": weights.tolist(), "deltas": deltas.tolist()}
-            ],
+            "class_names": list(self.class_names),
+            "weights": weights.tolist(),
         }
         Path(path).write_text(json.dumps(data, indent=2))
         
     @classmethod
     def load(cls, path: str | Path) -> "MLPRust":
         data = json.loads(Path(path).read_text())
+
         if data["model_type"] != "mlp":
-            raise ValueError(f"Fichier incompatible : model_type={data['model_type']!r}")
+            raise ValueError(
+                f"Fichier incompatible : model_type={data['model_type']!r}"
+            )
+
         hp = data["parameters"]
-        
+
         model = cls(
-            layers = hp["layer_sizes"],
+            layer_sizes=hp["layer_sizes"],
             learning_rate=hp["learning_rate"],
-            task_mode = hp["task_mode"],
-            seed=hp.get("seed", 42)
+            task_mode=TaskMode(hp["task_mode"]),
+            seed=hp.get("seed", 42),
         )
 
-        for model, submodel_data in zip(model.models, data["submodels"]):
-            weights = np.array(submodel_data["poids"], dtype=np.float32)
-            model.set_state(weights, submodel_data["biais"])
-        model.class_names = tuple(data["class_names"])
+        weights = np.asarray(data["weights"], dtype=np.float64)
+
+        status = model.library.lib.mlp_set_weights(
+            model._handle,
+            weights.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            weights.size,
+        )
+        _check_status(status, "mlp_set_weights")
+
+        model.class_names = tuple(data.get("class_names", range(model.output_dim)))
+
         return model
 
 class OVRRBF:
