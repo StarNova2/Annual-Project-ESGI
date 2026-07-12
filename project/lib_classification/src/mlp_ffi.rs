@@ -95,6 +95,39 @@ pub extern "C" fn mlp_predict(
 }
 
 #[unsafe(no_mangle)]
+pub extern "C" fn mlp_get_loss_history(
+    model: *const Mlp,
+    len: *mut usize,
+) -> *mut f64 {
+    if model.is_null() || len.is_null() {
+        return std::ptr::null_mut();
+    }
+
+    let model_ref = unsafe { &*model };
+    
+    // On récupère une copie ou une référence transformée en vecteur FFI
+    let history = model_ref.loss_history.clone();
+    
+    unsafe {
+        *len = history.len();
+    }
+
+    let boxed = history.into_boxed_slice();
+    Box::into_raw(boxed) as *mut f64
+}
+
+// Fonction pour libérer la mémoire du tableau de loss côté Python après lecture
+#[unsafe(no_mangle)]
+pub extern "C" fn mlp_free_loss_history(ptr: *mut f64, len: usize) {
+    if ptr.is_null() {
+        return;
+    }
+    unsafe {
+        let _ = Vec::from_raw_parts(ptr, len, len);
+    }
+}
+
+#[unsafe(no_mangle)]
 pub extern "C" fn mlp_output_dim(model: *const Mlp) -> usize {
     if model.is_null() {
         return 0;
@@ -134,33 +167,22 @@ pub extern "C" fn mlp_free_weights(ptr: *mut f64, len: usize) {
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn mlp_get_deltas(
-    model: *const Mlp,
-    len: *mut usize,
-) -> *mut f64 {
-    if model.is_null() || len.is_null() {
-        return std::ptr::null_mut();
+pub extern "C" fn mlp_set_weights(
+    model: *mut Mlp,
+    weights: *const f64,
+    len: usize,
+) -> i32 {
+
+    if model.is_null() || weights.is_null() {
+        return -1;
     }
 
-    let deltas = unsafe { (&*model).flattened_deltas() };
+    let model = unsafe { &mut *model };
+    let slice = unsafe { std::slice::from_raw_parts(weights, len) };
 
-    unsafe {
-        *len = deltas.len();
-    }
+    model.set_flattened_weights(slice);
 
-    let boxed = deltas.into_boxed_slice();
-    Box::into_raw(boxed) as *mut f64
-}
-
-#[unsafe(no_mangle)]
-pub extern "C" fn mlp_free_deltas(ptr: *mut f64, len: usize) {
-    if ptr.is_null() {
-        return;
-    }
-
-    unsafe {
-        let _ = Vec::from_raw_parts(ptr, len, len);
-    }
+    0
 }
 
 #[unsafe(no_mangle)]
