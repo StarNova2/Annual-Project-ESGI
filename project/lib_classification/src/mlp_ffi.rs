@@ -1,7 +1,7 @@
 use crate::mlp::Mlp;
 
 #[unsafe(no_mangle)]
-pub extern "C" fn mlp_create(layer_sizes: *const usize, layer_count: usize) -> *mut Mlp {
+pub extern "C" fn mlp_create(layer_sizes: *const usize, layer_count: usize, seed: u64) -> *mut Mlp {
     if layer_sizes.is_null() || layer_count < 2 {
         return std::ptr::null_mut();
     }
@@ -13,14 +13,14 @@ pub extern "C" fn mlp_create(layer_sizes: *const usize, layer_count: usize) -> *
     }
 
     // creation of the mlp dimensions
-    let input_size = layer_sizes[0] as i32;
-    let output_size = layer_sizes[layer_count - 1] as i32;
-    let hidden_layers: Vec<i32> = layer_sizes[1..layer_count - 1]
+    let input_size = layer_sizes[0] as usize;
+    let output_size = layer_sizes[layer_count - 1] as usize;
+    let hidden_layers: Vec<usize> = layer_sizes[1..layer_count - 1]
         .iter()
-        .map(|&size| size as i32)
+        .map(|&size| size)
         .collect();
 
-    Box::into_raw(Box::new(Mlp::new(input_size, hidden_layers, output_size)))
+    Box::into_raw(Box::new(Mlp::new(input_size, hidden_layers, output_size, seed)))
 }
 
 #[unsafe(no_mangle)]
@@ -84,7 +84,7 @@ pub extern "C" fn mlp_predict(
     let output_size = model.output_size();
     let inputs = unsafe { std::slice::from_raw_parts(inputs, input_size) };
     let input: Vec<f64> = inputs.iter().map(|&value| value as f64).collect();
-    let prediction = model.prediction(input, is_classification != 0);
+    let prediction = model.prediction(&input, is_classification != 0);
     let output = unsafe { std::slice::from_raw_parts_mut(output, output_size) };
 
     for (target, value) in output.iter_mut().zip(prediction.iter()) {
@@ -95,12 +95,94 @@ pub extern "C" fn mlp_predict(
 }
 
 #[unsafe(no_mangle)]
+pub extern "C" fn mlp_get_loss_history(
+    model: *const Mlp,
+    len: *mut usize,
+) -> *mut f64 {
+    if model.is_null() || len.is_null() {
+        return std::ptr::null_mut();
+    }
+
+    let model_ref = unsafe { &*model };
+    
+    // On récupère une copie ou une référence transformée en vecteur FFI
+    let history = model_ref.loss_history.clone();
+    
+    unsafe {
+        *len = history.len();
+    }
+
+    let boxed = history.into_boxed_slice();
+    Box::into_raw(boxed) as *mut f64
+}
+
+// Fonction pour libérer la mémoire du tableau de loss côté Python après lecture
+#[unsafe(no_mangle)]
+pub extern "C" fn mlp_free_loss_history(ptr: *mut f64, len: usize) {
+    if ptr.is_null() {
+        return;
+    }
+    unsafe {
+        let _ = Vec::from_raw_parts(ptr, len, len);
+    }
+}
+
+#[unsafe(no_mangle)]
 pub extern "C" fn mlp_output_dim(model: *const Mlp) -> usize {
     if model.is_null() {
         return 0;
     }
 
     unsafe { (&*model).output_size() }
+}
+
+#[unsafe(no_mangle)]
+pub extern "C" fn mlp_get_weights(
+    model: *const Mlp,
+    len: *mut usize,
+) -> *mut f64 {
+    if model.is_null() || len.is_null() {
+        return std::ptr::null_mut();
+    }
+
+    let weights = unsafe { (&*model).flattened_weights() };
+
+    unsafe {
+        *len = weights.len();
+    }
+
+    let boxed = weights.into_boxed_slice();
+    Box::into_raw(boxed) as *mut f64
+}
+
+#[unsafe(no_mangle)]
+pub extern "C" fn mlp_free_weights(ptr: *mut f64, len: usize) {
+    if ptr.is_null() {
+        return;
+    }
+
+    unsafe {
+        let _ = Vec::from_raw_parts(ptr, len, len);
+    }
+}
+
+#[unsafe(no_mangle)]
+pub extern "C" fn mlp_set_weights(
+    model: *mut Mlp,
+    weights: *const f64,
+    len: usize,
+) -> i32 {
+
+    if model.is_null() || weights.is_null() {
+        return -1;
+    }
+
+    let model = unsafe { &mut *model };
+    let slice = unsafe { std::slice::from_raw_parts(weights, len) };
+
+    model.set_flattened_weights(slice);
+
+    0
 }
 
 #[unsafe(no_mangle)]

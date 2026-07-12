@@ -8,7 +8,10 @@ from pathlib import Path
 # PARAMETRES
 # -------------------------
 
-DATASET_PATH = Path(r"C:/Users/theot/Pictures/Dataset")
+DATASET_PATH = Path(input("Give the Path to the dataset : "))
+if DATASET_PATH == "":
+    print("No dataset given, reverting to default")
+    DATASET_PATH = Path(r"C:/Users/theot/Pictures/Dataset")
 
 
 TAILLE_Y = 40
