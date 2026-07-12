@@ -81,6 +81,7 @@ pub extern "C" fn training_linear(pas_apprentissage: f32, n_loop : u32, ln_point
             w.b = w.b + pas_apprentissage* xk.b*(yk as f32 - gxk as f32);
             w.c = w.c + pas_apprentissage* xk.c*(yk as f32 - gxk as f32);
         }
+    }
 
 
     Box::into_raw(Box::new(w))
