@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -7,8 +6,9 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
+
 DEFAULT_DATASET_ROOT = Path(
-    r"G:\Mon Drive\Dataset projet annuel"
+    r"G:\.shortcut-targets-by-id\1iAfi-pFGoqzi63RuDrtZzG3SU73_RGLr\Dataset projet annuel"
 )
 DEFAULT_CLASS_NAMES = ("FPS", "METROIDVANIA", "MOBA")
 SUPPORTED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".bmp", ".webp"}
