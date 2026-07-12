@@ -1,8 +1,12 @@
 use core::f32;
 use std::vec;
-use rand::RngExt;
 use faer::{Mat, Side};
 use faer::prelude::*;
+use rand::SeedableRng;
+use rand::rngs::StdRng;
+use rand::RngExt;
+use rand::Rng;
+
 
 
 pub struct RBFModel {
@@ -13,19 +17,21 @@ pub struct RBFModel {
     liste_poids: Vec<f32>,
 
     gamma : f32,
+    rng: StdRng
 }
 
 impl RBFModel {
-    fn new(entree_dim: usize, nb_clusters: usize) -> Option<Self> {
+    fn new(entree_dim: usize, nb_clusters: usize, rand_seed: u64) -> Option<Self> {
         if entree_dim == 0 || nb_clusters == 0 {
             return None;
         }
 
+        let mut rng = StdRng::seed_from_u64(rand_seed);
         let liste_cluster = vec![vec![0.0; entree_dim]; nb_clusters];
         let liste_poids = vec![0.0; nb_clusters];
         let gamma = 1.0;
 
-        Some(Self { entree_dim, nb_clusters, liste_cluster, liste_poids, gamma })
+        Some(Self { entree_dim, nb_clusters, liste_cluster, liste_poids, gamma, rng})
     }
 
 
@@ -79,13 +85,11 @@ impl RBFModel {
     }
 
 
-
     fn lloyd(&mut self, ensemble_image: &[f32], nb_image: usize, mouvement_max: f32, max_loop: f32) {
-        let mut rng = rand::rng();
 
         //---Mise en place des cluster aléatoirement---
         for cluster in 0..self.nb_clusters{
-            let image_rng = rng.random_range(0..nb_image as usize);
+            let image_rng = self.rng.random_range(0..nb_image as usize);
             let debut = image_rng * self.entree_dim;
 
             let image = &ensemble_image[debut..debut + self.entree_dim];
@@ -174,9 +178,19 @@ impl RBFModel {
     }
 
 
-    fn entrainement(&mut self, ensemble_images : &[f32],nb_image: usize, mouvement_max: f32, max_loop: f32, label_y : &[f32]) -> bool{
+    fn entrainement(&mut self, ensemble_images : &[f32],nb_image: usize, mouvement_max: f32, max_loop: f32, label_y : &[f32]) -> i32{
+
+        if nb_image == 0 {
+            return -1;
+        }
+
+        if ensemble_images.len() != nb_image * self.entree_dim {
+            return -2;
+        }
+
+
         if nb_image == 0 || ensemble_images.len() != nb_image * self.entree_dim{
-            return false;
+            return -4;
         }
 
         self.lloyd(ensemble_images, nb_image, mouvement_max, max_loop);
@@ -209,13 +223,20 @@ impl RBFModel {
 
         let phi_t_y = &phi_t * &label;
 
-        let phi_t_phi = &phi_t * &phi;
+        let mut phi_t_phi = &phi_t * &phi;
 
         //let llt = phi_t_phi.llt(Side::Lower).unwrap();
 
+        let lambda = 1e-6;
+
+        for i in 0..self.nb_clusters{
+            phi_t_phi[(i, i)] += lambda;
+        }
+
+
         let llt = match phi_t_phi.llt(Side::Lower) {
             Ok(decomp) => decomp,
-            Err(_) => return false,  // retourne false au lieu de crasher
+            Err(_) => return -3,
         };
 
         let w = llt.solve(&phi_t_y);
@@ -226,7 +247,7 @@ impl RBFModel {
             self.liste_poids.push(w[(i, 0)]);
         }
 
-        true
+        0
     }
 
 
@@ -243,9 +264,9 @@ impl RBFModel {
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn creation_RBF_model(entree_dim: usize, nb_clusters: usize) -> *mut RBFModel {
+pub extern "C" fn creation_RBF_model(entree_dim: usize, nb_clusters: usize, rand_seed: u64) -> *mut RBFModel {
     //--Creation du model RBF
-    match RBFModel::new(entree_dim, nb_clusters) {
+    match RBFModel::new(entree_dim, nb_clusters, rand_seed) {
         Some(model) => Box::into_raw(Box::new(model)),
         None => std::ptr::null_mut(),
     }
@@ -264,13 +285,12 @@ pub extern "C" fn entrainement_RBF_model(model: *mut RBFModel,entree: *const f32
     let entree_ptr = unsafe { std::slice::from_raw_parts(entree, sample_count * model.entree_dim() )};
     let label_ptr = unsafe { std::slice::from_raw_parts(label, sample_count) };
 
-
-
-    if model.entrainement(entree_ptr, sample_count, mouvement_max, max_loop, label_ptr){
+    /*if model.entrainement(entree_ptr, sample_count, mouvement_max, max_loop, label_ptr){
         0
     } else {
         -1
-    }
+    }*/
+    model.entrainement(entree_ptr, sample_count, mouvement_max, max_loop, label_ptr)
 }
 
 
@@ -298,4 +318,60 @@ pub extern "C" fn RBF_model_free(model: *mut RBFModel) {
     }
 }
 
+#[unsafe(no_mangle)]
+pub extern "C" fn RBF_model_get_gamma(model: *const RBFModel) -> f32 {
+    if model.is_null() {return f32::NAN;}
+    unsafe { &*model }.gamma
+}
 
+#[unsafe(no_mangle)]
+pub extern "C" fn RBF_model_get_nb_cluster(model: *const RBFModel) ->  usize {
+    if model.is_null() {return 0;}
+    unsafe { &*model }.nb_clusters
+}
+
+#[unsafe(no_mangle)]
+pub extern "C" fn RBF_model_get_clusters(model: *const RBFModel, out: *mut f32) -> i32 {
+    if model.is_null() || out.is_null() { return -1; }
+    let model = unsafe { &*model };
+    // out doit pointer vers un buffer de taille nb_clusters * entree_dim
+    let out_slice = unsafe { std::slice::from_raw_parts_mut(out, model.nb_clusters * model.entree_dim) };
+
+    for (i, cluster) in model.liste_cluster.iter().enumerate() {
+        let start = i * model.entree_dim;
+        out_slice[start..start + model.entree_dim].copy_from_slice(cluster);
+    }
+    0
+}
+
+#[unsafe(no_mangle)]
+pub extern "C" fn RBF_model_get_poids(model: *const RBFModel, out : *mut f32) -> i32 {
+    if model.is_null() || out.is_null() {return -1;}
+    let model = unsafe{&*model};
+    let out = unsafe {std::slice::from_raw_parts_mut(out, model.nb_clusters)};
+
+    out.copy_from_slice(&model.liste_poids);
+    0
+}
+
+
+#[unsafe(no_mangle)]
+pub extern "C" fn RBF_model_set(model: *mut RBFModel, clusters: *const f32, poids : *const f32, gamma : f32) -> i32 {
+    if model.is_null() || clusters.is_null() || poids.is_null(){
+        return -1;
+    }
+
+    let model = unsafe { &mut *model };
+    let liste_cluster = unsafe { std::slice::from_raw_parts(clusters, model.nb_clusters * model.entree_dim) };
+    let liste_poid = unsafe{std::slice::from_raw_parts(poids, model.nb_clusters)};
+
+    for i in 0..model.nb_clusters{
+        let start = i * model.entree_dim;
+        model.liste_cluster[i].copy_from_slice(&liste_cluster[start..start + model.entree_dim]);
+    }
+
+    model.liste_poids.clear();
+    model.liste_poids.extend_from_slice(liste_poid);
+    model.gamma = gamma;
+    0
+}

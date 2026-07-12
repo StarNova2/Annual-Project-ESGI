@@ -580,10 +580,12 @@ class MLPRust:
 
 class OVRRBF:
 
-    def __init__(self, input_dim, nb_cluster, output_dim, library=None):
-        self.input_dim = int(input_dim)   # ← manquait
+    def __init__(self, input_dim, nb_cluster, output_dim, library=None, seed = 42, accuracy : float = 0.0):
+        self.input_dim = int(input_dim)
         self.output_dim = int(output_dim)
         self.library = library
+        self.seed = int(seed)
+        self.accuracy = float(accuracy)
         self.models = [
             RBFModelRust(
                 input_dim=input_dim,
