@@ -70,7 +70,7 @@ def charger_image():
     img = img.convert("L")
     img = img.resize((TAILLE_X, TAILLE_Y))
 
-    ax.imshow(img)#, cmap="gray"
+    ax.imshow(img, cmap="gray")
 
     ax.axis("off")
 

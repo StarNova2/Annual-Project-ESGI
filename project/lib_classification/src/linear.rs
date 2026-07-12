@@ -1,3 +1,5 @@
+use std::ascii::escape_default;
+use rand::distr::weighted::Weight;
 use rand::RngExt;
 
 #[repr(C)]
@@ -26,13 +28,13 @@ pub extern "C" fn print_hi(){
 
 #[unsafe(no_mangle)]
 pub extern "C" fn initialisation_droite() -> *mut MyDroite{
-    //Create 3 random float number (between 0 and 1)
+    //--Creation de 3 nombre random float (entre 0 et 1)---
     let mut rng = rand::rng();
     let r1 : f32 = rng.random::<f32>() * 2.0 - 1.0;
     let r2 : f32 = rng.random();
     let r3 : f32 = rng.random();
 
-    //Create MyDroite with 3 random f32 tuples
+    //---Creation de MyDroite avec 3 random f32 tuples---
     let droite = MyDroite::new(r1, r2, r3);
 
     //Box::into_raw() --> Return address (pour que le renvoie de pointeur fonctionne) depuis l'heap
@@ -43,7 +45,7 @@ pub extern "C" fn initialisation_droite() -> *mut MyDroite{
 #[unsafe(no_mangle)]
 pub extern "C" fn linear_classification_prediction(weights1: f32, weights2: f32, weights3: f32, xinput1 : f32, xinput2: f32, xinput3: f32 ) ->f32{
     let scal = weights1*xinput1 + weights2*xinput2 + weights3*xinput3;
-    if scal>=0.0{
+    if(scal>=0.0){
         1.0
     } else{
         -1.0
@@ -51,7 +53,7 @@ pub extern "C" fn linear_classification_prediction(weights1: f32, weights2: f32,
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn training(pas_apprentissage: f32, n_loop : u32, ln_point : u32, mut w  : MyDroite, ensemble_point: *const f32, label: *const f32 ) -> *mut MyDroite{
+pub extern "C" fn training_linear(pas_apprentissage: f32, n_loop : u32, ln_point : u32, mut w  : MyDroite, ensemble_point: *const f32, label: *const f32 ) -> *mut MyDroite{
     let data: &[f32] = unsafe {std::slice::from_raw_parts(ensemble_point, (ln_point* 2 ) as usize)};
 
     let labels: &[f32] = unsafe{std::slice::from_raw_parts(label, ln_point as usize)};
@@ -74,15 +76,11 @@ pub extern "C" fn training(pas_apprentissage: f32, n_loop : u32, ln_point : u32,
         gxk = linear_classification_prediction(w.a, w.b, w.c, xk.a, xk.b, xk.c);
 
         let error = (yk - gxk) as f32;
-        if error!=0 as f32{
+        if(error!=0 as f32){
             w.a = w.a + pas_apprentissage* xk.a*(yk as f32 - gxk as f32);
             w.b = w.b + pas_apprentissage* xk.b*(yk as f32 - gxk as f32);
             w.c = w.c + pas_apprentissage* xk.c*(yk as f32 - gxk as f32);
         }
-
-
-
-    }
 
 
     Box::into_raw(Box::new(w))

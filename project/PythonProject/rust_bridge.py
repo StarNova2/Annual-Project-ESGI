@@ -41,7 +41,7 @@ class RustLib:
     def _configure_signatures(self) -> None:
 
         #----Declaration du modèle linéaire via ffi signatures----
-        self.lib.linear_model_create.argtypes = [ctypes.c_size_t, ctypes.c_float]
+        self.lib.linear_model_create.argtypes = [ctypes.c_size_t, ctypes.c_float, ctypes.c_uint64]
         self.lib.linear_model_create.restype = ctypes.c_void_p
 
         self.lib.linear_model_train.argtypes = [
@@ -62,6 +62,22 @@ class RustLib:
 
         self.lib.linear_model_free.argtypes = [ctypes.c_void_p]
         self.lib.linear_model_free.restype = None
+
+        self.lib.linear_model_regression.restype = None
+        self.lib.linear_model_regression.argtypes = [ctypes.c_void_p,
+                                                     ctypes.POINTER(ctypes.c_float),
+                                                     ctypes.POINTER(ctypes.c_float),
+                                                     ctypes.c_size_t,
+                                                     ctypes.c_size_t
+                                                     ]
+        self.lib.linear_model_get_poids.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_float)]
+        self.lib.linear_model_get_poids.restype = ctypes.c_int32
+
+        self.lib.linear_model_get_bias.argtypes = [ctypes.c_void_p]
+        self.lib.linear_model_get_bias.restype = ctypes.c_float
+
+        self.lib.linear_model_set_state.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_float), ctypes.c_float]
+        self.lib.linear_model_set_state.restype = ctypes.c_int32
 
 
         #----Declaration du MLP via ffi signatures----
@@ -118,7 +134,7 @@ class RustLib:
         self.lib.mlp_free.restype = None
 
         # ----Declaration du modèle RBF + lloyd via ffi signatures----
-        self.lib.creation_RBF_model.argtypes = [ctypes.c_size_t, ctypes.c_size_t]
+        self.lib.creation_RBF_model.argtypes = [ctypes.c_size_t, ctypes.c_size_t, ctypes.c_uint64]
         self.lib.creation_RBF_model.restype = ctypes.c_void_p
 
         self.lib.entrainement_RBF_model.argtypes = [
@@ -128,7 +144,7 @@ class RustLib:
             ctypes.c_size_t,    # sample_count
             ctypes.c_float,     # mouvement_max
             ctypes.c_float,     # max_loop
-            ctypes.c_float      # gamma
+            ctypes.c_float     # gamma
         ]
 
         self.lib.entrainement_RBF_model.restype = ctypes.c_int32
@@ -143,25 +159,36 @@ class RustLib:
         self.lib.RBF_model_free.argtypes = [ctypes.c_void_p]
         self.lib.RBF_model_free.restype = None
 
-        # ----Declaration du modèle linéaire ----
-        class MyDroite(ctypes.Structure): _fields_ = [
-            ("a", ctypes.c_float),
-            ("b", ctypes.c_float),
-            ("c", ctypes.c_float),
+        self.lib.RBF_model_get_gamma.argtypes = [ctypes.c_void_p]
+        self.lib.RBF_model_get_gamma.restype = ctypes.c_float
+
+        self.lib.RBF_model_set.restype = ctypes.c_int32
+        self.lib.RBF_model_set.argtypes = [ctypes.c_void_p,
+                                           ctypes.POINTER(ctypes.c_float),
+                                           ctypes.POINTER(ctypes.c_float),
+                                           ctypes.c_float]
+
+        self.lib.RBF_model_get_nb_cluster.argtye = [ctypes.c_void_p,
+                                                    ctypes.POINTER(ctypes.c_float)]
+        self.lib.RBF_model_get_nb_cluster.restype = ctypes.c_int32
+
+        self.lib.RBF_model_get_clusters.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_float)
         ]
-        self.lib.initialisation_droite.restype = ctypes.POINTER(MyDroite)
-        self.lib.training.argtypes = [ctypes.c_float, ctypes.c_int32, ctypes.c_int32, MyDroite,
-                                 ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float)]
-        self.lib.training.restype = ctypes.POINTER(MyDroite)
-        self.lib.linear_classification_prediction.restype = ctypes.c_float
-        self.lib.linear_classification_prediction.argtypes = [
-            ctypes.c_float,
-            ctypes.c_float,
-            ctypes.c_float,
-            ctypes.c_float,
-            ctypes.c_float,
-            ctypes.c_float
+        self.lib.RBF_model_get_clusters.restype = ctypes.c_int
+
+        self.lib.RBF_model_get_poids.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_float)
         ]
+        self.lib.RBF_model_get_poids.restype = ctypes.c_int
+
+
+
+
+
+
 
 def _check_status(status: int, operation: str) -> None:
     if status != 0:
@@ -169,18 +196,23 @@ def _check_status(status: int, operation: str) -> None:
 
 
 class LinearModelRust:
-    def __init__(self, input_dim: int, learning_rate: float = 0.01, library: RustLib | None = None) -> None:
+    def __init__(self, input_dim: int, learning_rate: float = 0.01 , seed = 42) -> None:
         # creation of the rust linear model
-        self.library = library or RustLib()
+        self.library = RustLib()
+        self.learning_rate = float(learning_rate)
+        self.seed = int(seed)
+
         self.input_dim = int(input_dim)
-        self._handle = self.library.lib.linear_model_create(self.input_dim, learning_rate)
+        self._handle = self.library.lib.linear_model_create(self.input_dim, learning_rate, seed)
         if not self._handle:
             raise RuntimeError("Failed to create Rust linear model")
+
 
     def fit(self, x: np.ndarray, y: np.ndarray, epochs: int = 1_000) -> None:
         # training of the rust linear model
         x = _as_float32(x)
         y = _as_float32(y).reshape(-1)
+
         if x.ndim != 2 or x.shape[1] != self.input_dim:
             raise ValueError("x must be shaped (n_samples, input_dim)")
         if y.shape[0] != x.shape[0]:
@@ -191,9 +223,25 @@ class LinearModelRust:
             x.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
             y.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
             x.shape[0],
-            epochs,
+            epochs
         )
         _check_status(status, "linear_model_train")
+
+
+    def regression(self,x : np.ndarray, y: np.ndarray):
+        x = _as_float32(x)
+        y = _as_float32(y)
+
+
+        status = self.library.lib.linear_model_regression(
+            self._handle,
+            x.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
+            y.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
+            x.shape[0],
+            x.shape[1]
+        )
+        #_check_status(status, "linear_model_regression")
+
 
     def predict(self, x: np.ndarray) -> np.ndarray:
         # prediction with the rust linear model
@@ -212,28 +260,44 @@ class LinearModelRust:
             )
         return predictions
 
+
     def predict_labels(self, x: np.ndarray) -> np.ndarray:
         return np.where(self.predict(x) >= 0.0, 1.0, -1.0).astype(np.float32)
+
+
+    def get_poids(self) -> np.ndarray:
+        out = np.zeros(self.input_dim, dtype=np.float32)
+        status = self.library.lib.linear_model_get_poids(
+            self._handle, out.ctypes.data_as(ctypes.POINTER(ctypes.c_float))
+        )
+        _check_status(status, "linear_model_get_poids")
+        return out
+
+
+    def get_bias(self) -> float:
+        return float(self.library.lib.linear_model_get_bias(self._handle))
+
+
+    def set_state(self, poids: np.ndarray, bias: float) -> None:
+        poids = _as_float32(poids).reshape(-1)
+        status = self.library.lib.linear_model_set_state(
+            self._handle,
+            poids.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
+            ctypes.c_float(float(bias))
+        )
+        _check_status(status, "linear_model_set_state")
+
 
     def close(self) -> None:
         if getattr(self, "_handle", None):
             self.library.lib.linear_model_free(self._handle)
             self._handle = None
 
+
+
     def __del__(self) -> None:
         self.close()
 
-
-
-class LinearModel:
-    def __init__(self, entree_dim: int, pas_apprentissage: float = 0.01, library = None) -> None:
-        self.library = library or RustLib()
-        self.entree_dim = int(entree_dim)
-        self.MyDroite = self.library.lib.initialisation_droite()
-        if not self.MyDroite:
-            raise RuntimeError("Erreur création modèle linéaire")
-
-    #def entrainement(self, ):
 
 class OVRLinearClassifier:
     def __init__(
@@ -242,21 +306,28 @@ class OVRLinearClassifier:
         output_dim: int,
         learning_rate: float = 0.01,
         library: RustLib | None = None,
+        seed = 42,
+        accuracy : float = 0.0
     ) -> None:
         # creation of the one-vs-rest linear models
-        self.library = library or RustLib()
+        self.library = RustLib()
         self.input_dim = int(input_dim)
         self.output_dim = int(output_dim)
+        self.learning_rate = float(learning_rate)
+        self.seed = int(seed)
+        self.accuracy = float(accuracy)
         self.models = [
-            LinearModelRust(self.input_dim, learning_rate=learning_rate, library=self.library)
+            LinearModelRust(self.input_dim, learning_rate=learning_rate, seed=seed+i)
             #LinearModel(self.input_dim, learning_rate = learning_rate, library = self.library)
-            for _ in range(self.output_dim)
+            for i in range(self.output_dim)
         ]
 
     def fit(self, x: np.ndarray, y: np.ndarray, epochs: int = 1_000) -> None:
         # training of the one-vs-rest linear models
         x = _as_float32(x)
         y = _as_float32(y)
+
+
         if x.ndim != 2 or x.shape[1] != self.input_dim:
             raise ValueError("x must be shaped (n_samples, input_dim)")
         if y.ndim != 2 or y.shape != (x.shape[0], self.output_dim):
@@ -265,13 +336,77 @@ class OVRLinearClassifier:
         for class_index, model in enumerate(self.models):
             model.fit(x, y[:, class_index], epochs=epochs)
 
+    def regression(self, x: np.array, y: np.array):
+        x = _as_float32(x)
+        y = _as_float32(y)
+
+        if x.ndim != 2 or x.shape[1] != self.input_dim:
+            raise ValueError("x must be shaped (n_samples, input_dim)")
+        if y.ndim != 2 or y.shape != (x.shape[0], self.output_dim):
+            raise ValueError("y must be shaped (n_samples, output_dim)")
+
+        for class_index, model in enumerate(self.models):
+            model.regression(x, y[:, class_index])
+
+
+    def prediction(self, x: np.array) -> np.ndarray:
+        return np.stack([model.predict(x) for model in self.models], axis=1)
+
+
     def predict_labels(self, x: np.ndarray) -> np.ndarray:
         # prediction with the one-vs-rest linear models
-        scores = np.stack([model.predict(x) for model in self.models], axis=1)
+        scores = self.prediction(x)
         winners = np.argmax(scores, axis=1)
         labels = -np.ones((scores.shape[0], self.output_dim), dtype=np.float32)
         labels[np.arange(scores.shape[0]), winners] = 1.0
         return labels
+
+    def set_accuracy(self, accuracy):
+        self.accuracy = accuracy
+
+    @classmethod
+    def charge(cls, path: str | Path) -> "OVRLinearClassifier":
+        data = json.loads(Path(path).read_text())
+        if data["model_type"] != "Lineaire":
+            raise ValueError(f"Fichier incompatible : model_type={data['model_type']!r}")
+        champs = data["parametres"]
+
+        ovr = cls(
+            input_dim=champs["input_dim"],
+            output_dim=champs["output_dim"],
+            learning_rate=champs["learning_rate"],
+            seed=champs.get("seed", 42)
+        )
+
+        for model, submodel_data in zip(ovr.models, data["submodels"]):
+
+            weights = np.array(submodel_data["poids"], dtype=np.float32)
+            model.set_state(weights, submodel_data["biais"])
+
+        ovr.class_names = tuple(data["class_names"])
+        return ovr
+
+    def sauvegarde(self, path: str | Path, log: dict, epochs) -> None:
+        data = {
+            "model_type": "Lineaire",
+            "accuracy": self.accuracy,
+            "parametres": {
+                "input_dim": self.input_dim,
+                "output_dim": self.output_dim,
+                "learning_rate": self.learning_rate,
+                "seed": self.seed,
+                "log_loss": log
+            },
+            "class_names": list(getattr(self, "class_names", range(self.output_dim))),
+            "epochs": epochs,
+            "submodels": [
+                {"poids": model.get_poids().tolist(), "biais": model.get_bias()}
+                for model in self.models
+            ],
+        }
+        Path(path).write_text(json.dumps(data, indent=2))
+
+
 
     def close(self) -> None:
         for model in getattr(self, "models", []):
@@ -453,21 +588,29 @@ class OVRRBF:
             RBFModelRust(
                 input_dim=input_dim,
                 nb_cluster=nb_cluster,
-                library=library
+                library=library,
+                seed=seed+i
             )
-            for _ in range(output_dim)
+            for i in range(output_dim)
         ]
 
     def entrainement(self, x, y, mouvement_max, max_loop, gamma):
         x = _as_float32(x)
-        y = _as_float32(y)  # ← PAS de .reshape(-1) ici
+        y = _as_float32(y)
+
+        if x.ndim != 2 or x.shape[1] != self.input_dim:
+            raise ValueError("x must be shaped (n_samples, input_dim)")
+        if y.ndim != 2 or y.shape != (x.shape[0], self.output_dim):
+            raise ValueError("y must be shaped (n_samples, output_dim)")
 
         for class_index, model in enumerate(self.models):
-            y_binary = y[:, class_index]  # ← sélection par colonne
+            y_binary = y[:, class_index]
             y_binary = np.where(y_binary > 0, 1.0, -1.0).astype(np.float32)
             model.entrainement(x, y_binary, mouvement_max, max_loop, gamma)
 
-    def prediction(self, x):
+
+
+    '''def prediction(self, x):
         scores = []
         for model in self.models:
             score = model.prediction(x)
@@ -480,10 +623,86 @@ class OVRRBF:
         labels = -np.ones((scores.shape[0], self.output_dim), dtype=np.float32)
         labels[np.arange(scores.shape[0]), winners] = 1.0
         return labels
+        '''
+
+
+    def prediction(self, x):
+        scores = []
+        for model in self.models:
+            scores.append(model.prediction(x))
+
+        return np.stack(scores, axis=1)
+
+    def prediction_labels(self, x):
+        scores = self.prediction(x)
+
+        winners = np.argmax(scores, axis=1)
+
+        labels = -np.ones((scores.shape[0], self.output_dim), dtype=np.float32)
+        labels[np.arange(scores.shape[0]), winners] = 1.0
+
+        return labels
 
     def close(self):
         for model in getattr(self, "models", []):
             model.close()
+
+    def sauvegarde(self, path: str | Path, log_loss: dict, nb_cluster, mouvement_max, gamma, max_loop) -> None:
+        data = {
+            "model_type": "ovr_rbf",
+            "accuracy": self.accuracy,
+            "parametres": {
+                "input_dim": self.input_dim,
+                "output_dim": self.output_dim,
+                "seed": self.seed,
+                "nb_cluster": nb_cluster,
+                "mouvement_max": mouvement_max,
+                "max_loop": max_loop,
+                "gamma": gamma,
+
+            },
+            "class_names": list(getattr(self, "class_names", range(self.output_dim))),
+            "log_loss": log_loss,
+            "submodels": [
+                {
+                    "gamma": model.get_gamma(),
+                    "clusters": model.get_clusters().tolist(),
+                    "poids": model.get_poids().tolist()
+                }
+                for model in self.models
+            ],
+        }
+        Path(path).write_text(json.dumps(data, indent=2))
+
+    @classmethod
+    def charge(cls, path: str | Path, library: RustLib | None = None) -> "OVRRBF":
+        data = json.loads(Path(path).read_text())
+        if data["model_type"] != "ovr_rbf":
+            raise ValueError(f"Fichier incompatible : model_type={data['model_type']!r}")
+
+        hp = data["parametres"]
+        nb_clusters = len(data["submodels"][0]["clusters"])
+
+        ovr = cls(
+            input_dim=hp["input_dim"],
+            output_dim=hp["output_dim"],
+            nb_cluster=nb_clusters,
+            seed=hp.get("seed", 42),
+            library=library
+        )
+
+        for model, submodel_data in zip(ovr.models, data["submodels"]):
+            clusters = np.array(submodel_data["clusters"], dtype=np.float32)
+            weights = np.array(submodel_data["poids"], dtype=np.float32)  # <- "poids", pas "weights"
+            model.set_state(clusters, weights, submodel_data["gamma"])
+
+        ovr.class_names = tuple(data["class_names"])
+        return ovr
+
+
+    def set_accuracy(self, accuracy):
+        self.accuracy = accuracy
+
 
     def __del__(self):
         self.close()
@@ -491,12 +710,15 @@ class OVRRBF:
 
 class RBFModelRust:
 
-    def __init__(self, input_dim: int, nb_cluster: int, library: RustLib | None = None) -> None:
+    def __init__(self, input_dim: int, nb_cluster: int, library: RustLib | None = None, seed = 42) -> None:
         self.library = library or RustLib()
+        self.nb_cluster = nb_cluster
         self.input_dim = int(input_dim)
+        self.seed = seed
         self._handle = self.library.lib.creation_RBF_model(
             ctypes.c_size_t(self.input_dim),
             ctypes.c_size_t(int(nb_cluster)),
+            ctypes.c_uint64(self.seed)
         )
         if not self._handle:
             raise RuntimeError("Echec lors de la création du modèle RBF")
@@ -510,6 +732,7 @@ class RBFModelRust:
             raise ValueError("y must contain one target per sample")
 
         status = self.library.lib.entrainement_RBF_model(
+        #self.library.lib.entrainement_RBF_model(
             self._handle,
             x.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
             y.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
@@ -543,6 +766,34 @@ class RBFModelRust:
         if getattr(self, "_handle", None):
             self.library.lib.RBF_model_free(self._handle)
             self._handle = None
+
+    def get_gamma(self) -> float:
+        return float(self.library.lib.RBF_model_get_gamma(self._handle))
+
+    def get_clusters(self) -> np.ndarray:
+        out = np.zeros(self.nb_cluster * self.input_dim, dtype=np.float32)
+
+        status = self.library.lib.RBF_model_get_clusters(self._handle, out.ctypes.data_as(ctypes.POINTER(ctypes.c_float)))
+        _check_status(status, "RBF_model_get_clusters")
+        return out.reshape(self.nb_cluster, self.input_dim)
+
+    def get_poids(self) -> np.ndarray:
+        out = np.zeros(self.nb_cluster, dtype=np.float32)
+        status = self.library.lib.RBF_model_get_poids(self._handle, out.ctypes.data_as(ctypes.POINTER(ctypes.c_float)))
+        _check_status(status, "RBF_model_get_poids")
+        return out
+
+    def set_state(self, clusters: np.ndarray, weights: np.ndarray, gamma: float) -> None:
+        clusters = _as_float32(clusters).reshape(-1)
+        weights = _as_float32(weights).reshape(-1)
+        status = self.library.lib.RBF_model_set(
+            self._handle,
+            clusters.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
+            weights.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
+            ctypes.c_float(float(gamma)),
+        )
+        _check_status(status, "RBF_model_set_state")
+
 
     def __del__(self) -> None:
         self.close()
