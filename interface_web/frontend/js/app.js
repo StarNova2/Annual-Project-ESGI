@@ -14,25 +14,24 @@ const API_BASE = window.location.protocol === "file:" ? "http://127.0.0.1:5000" 
 
 const fallbackModels = [
   {
-    filename: "model_linear1.json",
+    filename: "linear/model_linear.json",
     model_type: "Lineaire",
     accuracy: 0.8925831202046036,
     class_names: ["FPS", "METROIDVANIA", "MOBA"],
     offline: true,
   },
   {
-    filename: "model_rbf2.json",
+    filename: "rbf/model_rbf.json",
     model_type: "ovr_rbf",
     accuracy: 0.907928388746803,
     class_names: ["FPS", "METROIDVANIA", "MOBA"],
     offline: true,
   },
   {
-    filename: "model_mlp.json",
-    model_type: "MLP",
-    accuracy: null,
+    filename: "mlp/model_mlp.json",
+    model_type: "mlp",
+    accuracy: 0.6751918158567775,
     class_names: ["FPS", "METROIDVANIA", "MOBA"],
-    comingSoon: true,
   },
 ];
 
@@ -71,8 +70,8 @@ function withModelPlaceholders(models) {
   return [
     ...models,
     {
-      filename: "model_mlp.json",
-      model_type: "MLP",
+      filename: "mlp/model_mlp.json",
+      model_type: "mlp",
       accuracy: null,
       class_names: ["FPS", "METROIDVANIA", "MOBA"],
       comingSoon: true,

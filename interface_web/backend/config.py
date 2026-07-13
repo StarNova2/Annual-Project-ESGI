@@ -2,7 +2,7 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-PYTHON_PROJECT_DIR = PROJECT_ROOT / "PythonProject"
+PYTHON_PROJECT_DIR = PROJECT_ROOT / "project" / "PythonProject"
 SAVE_MODEL_DIR = PYTHON_PROJECT_DIR / "save_model"
 
 CLASS_NAMES = ("FPS", "METROIDVANIA", "MOBA")
