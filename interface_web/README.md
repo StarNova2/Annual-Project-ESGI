@@ -49,11 +49,3 @@ Pour garder une démo propre, elle affiche un seul modèle par famille :
 - MLP : priorité à `mlp/model_mlp.json`, puis fallback vers un autre JSON MLP valide.
 
 Un fichier absent, vide ou invalide est ignoré automatiquement.
-
-État actuel :
-
-- linéaire : supporté ;
-- RBF : supporté ;
-- MLP : supporté avec le format JSON actuel (`weights` plat + `parameters.layer_sizes`).
-
-Note : la DLL Rust présente localement est plus ancienne que `rust_bridge.py` et ne contient pas toutes les fonctions déclarées. L'interface lit donc directement les poids/clusters sauvegardés dans les JSON pour faire l'inférence, ce qui suffit pour afficher les modèles entraînés sans toucher au code existant.
