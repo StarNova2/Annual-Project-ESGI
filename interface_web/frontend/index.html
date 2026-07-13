@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GameSnap Classifier</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#">
+        <span class="brand-mark">GC</span>
+        <span>GameSnap Classifier</span>
+      </a>
+
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="#demo">Démo</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-content">
+          <p class="eyebrow">Projet annuel ESGI</p>
+          <h1>Identifiez le genre d’un jeu à partir d’une capture.</h1>
+          <p class="hero-text">
+            Importez une image, choisissez un modèle entraîné, et obtenez une
+            prédiction claire entre FPS, Metroidvania et MOBA.
+          </p>
+
+          <div class="hero-actions">
+            <a class="primary-link" href="#demo">Tester une image</a>
+          </div>
+        </div>
+
+        <div class="hero-card" aria-hidden="true">
+          <div class="floating-card card-orange">FPS</div>
+          <div class="floating-card card-purple">Metroidvania</div>
+          <div class="floating-card card-blue">MOBA</div>
+          <div class="hero-preview">
+            <span>Image</span>
+            <strong>→</strong>
+            <span>Prédiction</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="demo" class="demo-section">
+        <div class="section-heading">
+          <p class="eyebrow">Démo</p>
+          <h2>Analysez une capture en quelques secondes</h2>
+        </div>
+
+        <div class="demo-card">
+          <form id="predict-form" class="demo-form">
+            <section id="models" class="form-block">
+              <div class="block-heading">
+                <span>1</span>
+                <div>
+                  <h3>Choisir un modèle</h3>
+                  <p>Sélectionnez le modèle à utiliser pour l’analyse.</p>
+                </div>
+              </div>
+
+              <div id="model-grid" class="model-grid" aria-live="polite">
+                <div class="model-card is-loading">Chargement des modèles...</div>
+              </div>
+            </section>
+
+            <section class="form-block">
+              <div class="block-heading">
+                <span>2</span>
+                <div>
+                  <h3>Importer une image</h3>
+                  <p>Ajoutez une capture d’écran de jeu.</p>
+                </div>
+              </div>
+
+              <label id="drop-zone" class="drop-zone" for="image-input">
+                <input id="image-input" type="file" accept="image/*" />
+                <span class="upload-icon">+</span>
+                <span class="upload-copy">
+                  <strong id="upload-title">Importer une image</strong>
+                  <small id="upload-subtitle">Glissez une image ici ou cliquez pour choisir un fichier</small>
+                </span>
+                <span class="upload-cta">Parcourir</span>
+              </label>
+              <p class="upload-note">
+                Une fois l’image importée, vous pouvez changer de modèle sans la renvoyer.
+              </p>
+
+              <button id="submit-button" class="primary-button" type="submit">
+                Lancer l’analyse
+              </button>
+            </section>
+          </form>
+
+          <aside class="preview-column">
+            <div id="preview" class="image-preview" aria-live="polite">
+              <div class="empty-preview">
+                <span>Aucune image sélectionnée</span>
+              </div>
+            </div>
+
+            <div id="result-state" class="result-card idle" aria-live="polite">
+              <p class="result-kicker">Résultat</p>
+              <strong>En attente</strong>
+              <span>La prédiction apparaîtra ici.</span>
+            </div>
+
+            <div id="scores-card" class="scores-card" hidden>
+              <button id="toggle-details" class="details-button" type="button">
+                Voir les détails de la prédiction
+              </button>
+              <div id="scores-list" class="scores-list" hidden></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>Projet annuel ESGI</span>
+      <span>FPS · Metroidvania · MOBA</span>
+      <span>Linéaire · RBF · MLP</span>
+    </footer>
+
+    <script src="js/app.js"></script>
+  </body>
+</html>
