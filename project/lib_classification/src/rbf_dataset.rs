@@ -5,9 +5,6 @@ use faer::prelude::*;
 use rand::SeedableRng;
 use rand::rngs::StdRng;
 use rand::RngExt;
-use rand::Rng;
-
-
 
 pub struct RBFModel {
     entree_dim: usize,
@@ -26,7 +23,7 @@ impl RBFModel {
             return None;
         }
 
-        let mut rng = StdRng::seed_from_u64(rand_seed);
+        let rng = StdRng::seed_from_u64(rand_seed);
         let liste_cluster = vec![vec![0.0; entree_dim]; nb_clusters];
         let liste_poids = vec![0.0; nb_clusters];
         let gamma = 1.0;

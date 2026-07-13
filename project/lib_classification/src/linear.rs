@@ -1,5 +1,3 @@
-use std::ascii::escape_default;
-use rand::distr::weighted::Weight;
 use rand::RngExt;
 
 #[repr(C)]
@@ -45,7 +43,7 @@ pub extern "C" fn initialisation_droite() -> *mut MyDroite{
 #[unsafe(no_mangle)]
 pub extern "C" fn linear_classification_prediction(weights1: f32, weights2: f32, weights3: f32, xinput1 : f32, xinput2: f32, xinput3: f32 ) ->f32{
     let scal = weights1*xinput1 + weights2*xinput2 + weights3*xinput3;
-    if(scal>=0.0){
+    if scal>=0.0 {
         1.0
     } else{
         -1.0
@@ -76,7 +74,7 @@ pub extern "C" fn training_linear(pas_apprentissage: f32, n_loop : u32, ln_point
         gxk = linear_classification_prediction(w.a, w.b, w.c, xk.a, xk.b, xk.c);
 
         let error = (yk - gxk) as f32;
-        if(error!=0 as f32){
+        if error!=0 as f32 {
             w.a = w.a + pas_apprentissage* xk.a*(yk as f32 - gxk as f32);
             w.b = w.b + pas_apprentissage* xk.b*(yk as f32 - gxk as f32);
             w.c = w.c + pas_apprentissage* xk.c*(yk as f32 - gxk as f32);
