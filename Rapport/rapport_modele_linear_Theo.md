@@ -100,7 +100,7 @@ En regardant mieux le graphique, j'ai vu qu'une droite à l'horizontale pourrais
     - Allé retour Python <-> Rust : 14.93
     - ![img.png](screenshot/graphique_linear/img.png)
   - obsetvation
-    - un beau 91% d'accuracy, pourtant, on trouve aussi 70% d'accuracy. Le faite de tester avec plusieurs seed aide beaucoup
+    - un beau 91% d'accuracy, pourtant, on trouve aussi 70% de loss. Le faite de tester avec plusieurs seed aide beaucoup
     - je voulais juste garder ces valeurs, maintenant commençons de 0
 
 
