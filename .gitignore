@@ -7,3 +7,5 @@ __pycache__/
 \lib_classification\target\
 \PythonProject\.idea\
 .idea/
+\project\PythonProject\save_model\rbf\
+\project\PythonProject\save_model\linear\

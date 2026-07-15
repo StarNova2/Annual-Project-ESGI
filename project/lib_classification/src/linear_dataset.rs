@@ -50,7 +50,6 @@ impl LinearModel {
         }
 
 
-        //Some(self.poids.iter().zip(features.iter()).fold(self.biais, |total, (&weight, &feature)| total + weight * feature))
         Some(score)
     }
 
