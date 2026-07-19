@@ -184,6 +184,11 @@ class RustLib:
         ]
         self.lib.RBF_model_get_poids.restype = ctypes.c_int
 
+        self.lib.RBF_model_predict_score.argtypes = [ctypes.c_void_p,
+                                                     ctypes.POINTER(ctypes.c_float),
+                                                     ctypes.c_size_t]
+        self.lib.RBF_model_predict_score.restype = ctypes.c_float
+
 
 
 
@@ -611,23 +616,6 @@ class OVRRBF:
             model.entrainement(x, y_binary, mouvement_max, max_loop, gamma)
 
 
-
-    '''def prediction(self, x):
-        scores = []
-        for model in self.models:
-            score = model.prediction(x)
-            scores.append(score)
-        scores = np.stack(scores, axis=1)  # (n_samples, output_dim)
-
-        winners = np.argmax(scores, axis=1)
-
-        # Conversion en one-hot -1/+1
-        labels = -np.ones((scores.shape[0], self.output_dim), dtype=np.float32)
-        labels[np.arange(scores.shape[0]), winners] = 1.0
-        return labels
-        '''
-
-
     def prediction(self, x):
         scores = []
         for model in self.models:
@@ -644,6 +632,7 @@ class OVRRBF:
         labels[np.arange(scores.shape[0]), winners] = 1.0
 
         return labels
+
 
     def close(self):
         for model in getattr(self, "models", []):
@@ -745,6 +734,7 @@ class RBFModelRust:
         )
         _check_status(status, "RBF_model_train")
 
+
     def prediction(self, x: np.ndarray) -> np.ndarray:
         x = _as_float32(x)
         if x.ndim == 1:
@@ -754,20 +744,23 @@ class RBFModelRust:
 
         predictions = np.zeros((x.shape[0],), dtype=np.float32)
         for index, row in enumerate(x):
-            predictions[index] = self.library.lib.RBF_model_predict(
+            predictions[index] = self.library.lib.RBF_model_predict_score(
                 self._handle,
                 row.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
                 row.shape[0],
             )
         return predictions
 
+
     def prediction_labels(self, x: np.ndarray) -> np.ndarray:
         return np.where(self.prediction(x) >= 0.0, 1.0, -1.0).astype(np.float32)
+
 
     def close(self) -> None:
         if getattr(self, "_handle", None):
             self.library.lib.RBF_model_free(self._handle)
             self._handle = None
+
 
     def get_gamma(self) -> float:
         return float(self.library.lib.RBF_model_get_gamma(self._handle))

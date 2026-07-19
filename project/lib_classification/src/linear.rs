@@ -1,3 +1,5 @@
+use std::ascii::escape_default;
+use rand::distr::weighted::Weight;
 use rand::RngExt;
 
 #[repr(C)]
