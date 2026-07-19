@@ -184,17 +184,18 @@ En regardant mieux le graphique, j'ai vu qu'une droite à l'horizontale pourrais
   - parametre
     - epochs = 1000
     - pas_apprentissage = 0.001
-    - batch_size_like = 100000
+    - batch_size_like = 1_000_000/6.7
     - liste seed :[12, 24, 42, 5, 59]
-    - Allé retour Python <-> Rust : 14.93
+    - Allé retour Python <-> Rust : 10
   - résultat
       - meilleur résultat seed 5:
         - accuracy : 0.922
-        - matrice        FPS  METRO   MOBA
-                  FPS     91     12      5
-                METRO      3    143      2
-                 MOBA      1      6    111
-        - ![img.png](screenshot/graphique_linear/graphh_linear_pa_0.001_epo_1000_seed_5.png)
+        - matrice        
+          FPS  METRO   MOBA
+  FPS     92      7      9
+METRO      6    142      0
+ MOBA      3      4    111
+        - ![img.png](screenshot/graphique_linear/exp_6_42.png)
       - résultats représentatife seed 24 :
         - accuracy 0.917
         - matrice        FPS  METRO   MOBA
@@ -220,10 +221,10 @@ En regardant mieux le graphique, j'ai vu qu'une droite à l'horizontale pourrais
     - pas_apprentissage = 0.001
     - batch_size_like = 10000
     - liste seed :[12, 24, 42, 5, 59]
-    - Allé retour Python <-> Rust : 149.3
-  - résultat
+    - Allé retour Python <-> Rust : 100.
+    - résultat
       - meilleur résultat seed 5:
-        - ![img.png](screenshot/graphique_linear/graphh_linear_pa_0.001_epo_1000_seed_5b.png)
+        - ![img.png](screenshot/graphique_linear/exp_7_5.png)
       - résultats représentatife seed 24 :
         - ![img.png](screenshot/graphique_linear/graphh_linear_pa_0.001_epo_1000_seed_24b.png)
   - obsetvation
@@ -238,17 +239,18 @@ En regardant mieux le graphique, j'ai vu qu'une droite à l'horizontale pourrais
   - parametre
     - epochs = 1000
     - pas_apprentissage = 0.0001
-    - batch_size_like = 100000
+    - batch_size_like = pareil
     - liste seed :[12, 24, 42, 5, 59]
-    - Allé retour Python <-> Rust : 149.3
+    - Allé retour Python <-> Rust : 100.3
   - résultat
       - meilleur résultat seed 42:
         - accuracy : 0.912
-        - matrice        FPS  METRO   MOBA
-                  FPS     87     10     11
-                METRO      2    144      2
-                 MOBA      4      4    110
-        - ![img.png](screenshot/graphique_linear/graphh_linear_pa_0.001_epo_1000_seed_42b.png)
+        - matrice        
+                         FPS  METRO   MOBA
+                  FPS     87     8       9
+                METRO      4    142      2
+                 MOBA      7      3    110
+        - ![img.png](screenshot/graphique_linear/esp_8_42.png)
       - résultats représentatife seed 5 :
         - accuracy 0.882
         - matrice        FPS  METRO   MOBA
@@ -301,7 +303,8 @@ En regardant mieux le graphique, j'ai vu qu'une droite à l'horizontale pourrais
   - résultat
       - meilleur résultat seed 42:
         - accuracy : 0.92
-        - matrice        FPS  METRO   MOBA
+        - matrice        
+                         FPS  METRO   MOBA
                   FPS     92      7      9
                 METRO      7    141      0
                  MOBA      3      4    111
@@ -360,18 +363,19 @@ En regardant mieux le graphique, j'ai vu qu'une droite à l'horizontale pourrais
   - résultat
       - meilleur résultat seed 5 :
         - accuracy : 0.925
-        - matrice        FPS  METRO   MOBA
+        - matrice        
+                         FPS  METRO   MOBA
                   FPS     92     12      4
                 METRO      3    143      2
                  MOBA      1      6    111
-        - ![img.png](screenshot/graphique_linear/exp12_5.png)
+        - ![img.png](screenshot/graphique_linear/exp_12_5b.png)
       - résultats représentatife seed 42 :
         - accuracy 0.920
         - matrice        FPS  METRO   MOBA
                   FPS     92      7      9
                 METRO      7    141      0
                  MOBA      3      4    111
-        - ![img.png](screenshot/graphique_linear/exp12_42.png)
+        - ![img.png](screenshot/graphique_linear/exp_12_42b.png)
   - obsetvation
     - 24 min d'entrainement 
     - des résultats bon en train : 0.0029 en loss

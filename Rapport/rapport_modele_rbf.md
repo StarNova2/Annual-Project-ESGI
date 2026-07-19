@@ -57,6 +57,12 @@
     - liste seed :[12, 24, 42, 5, 59]
   - résultat
     - loss : ereur, (train -> 0.8, test -> 0.75), ~1, 2.5
+    - ![img.png](screenshot/graphique_rbf/exp_4_1.png)
+    - matrice 
+          FPS  METRO   MOBA
+  FPS     41      3     64
+METRO      3     79     66
+ MOBA      4      3    111
     - accuracy : erreur, 0.6, 0.6, 0.02
   - obsetvation
     - pour 4 cluster, on vois que plus le gamma augmente, moins il est précis
@@ -75,7 +81,13 @@
     - liste seed :[12, 24, 42, 5, 59]
   - résultat
     - loss : 6(train : 0.7, test : 0.65), 8(erreur(gamma trop petit)  ), 10(erreur(gamma trop petit) ou 0.65 / 0.9)
-    - accuracy : 6(0.62), 8(erreur(gamma trop petit)), 10(erreur(gamma trop petit) ou 0.5 de moy)
+    - ![img.png](screenshot/graphique_rbf/exp_5_30.png)
+    - accuracy : 6(0.62), 8(erreur(gamma trop petit)), 10(erreur(gamma trop petit) ou 0.5 de moy, max 0.695)
+    - matrice 10
+         FPS  METRO   MOBA
+  FPS     98      2      8
+METRO      6    136      6
+ MOBA     59      0     59
   - obsetvation
     - à pemière vu, avec 8 et 10 cluster le gamma trop petit faisait crashé le modèle. Mais après avoir essayé avec d'autre seed, le cluster 10 à réussi à donner un beau résultats en loss. Mais sur 3 seed, il y avais 1 résultats assez mauvais (0.9 de loss, 0.4 accuracy)
     - les cluster étant plus nombreux, et ayant une grande guaussienne, les cluster se ressemblais ce qui à fait planté le modèle, donc ça sera compliqué de remettre 0.0001 en gamma plus tard 
@@ -384,18 +396,20 @@ METRO      5    143      0
 - utilisation 200, 300
   - parametre
     - mouvement max : 0.0001
-    - nb cluster : 100, 200, 300
+    - nb cluster : 200, 300
     - max loop : 1000 
     - gamma : 0.1
     - liste seed :[12, 24, 42, 5, 59]
   - résultat
-    - loss  :  200(train: 0.2 , test: 0.19), 300(test : 0.4, train : 0.42)
-    - accuracy :  200(0.9), 300(0.7)
+    - loss  :  200(train: 0.2 , test: 0.19)
+    - ![img.png](screenshot/graphique_rbf/exp_rbf_15_200.png)
+    - , 300(test : 0.4, train : 0.42)
+    - accuracy :  200(0.92), 300(0.7)
     - matrice 200
          FPS  METRO   MOBA
-  FPS    101      4      3
-METRO      3    144      1
- MOBA     11      0    107
+  FPS    102      4      2
+METRO      4    144      0
+ MOBA     12      0    106
     - 300
           FPS  METRO   MOBA
   FPS     80      7     21
@@ -417,6 +431,7 @@ METRO      5    136      7
     - liste seed :[12, 24, 42, 5, 59]
   - résultat
     - loss  :  350(erreur + test : 0.13, train : 0.17)
+    - ![img.png](screenshot/graphique_rbf/exp_rgb_16_12.png)
     - accuracy :  350(erreur + 0.9)
     - matrice 350
           FPS  METRO   MOBA
@@ -448,11 +463,12 @@ METRO      5    143      0
     - liste seed :range(0, 100) (14)
   - résultat
     - loss  :  test : 0.11, train : 0.15
-    - accuracy :  0.92
+    - ![img.png](screenshot/graphique_rbf/exp_rbf_16_14.png)
+    - accuracy :  0.93
     - matrice 
           FPS  METRO   MOBA
-  FPS    102      4      2
-METRO      2    146      0
+  FPS    103      3      2
+METRO      6    142      0
  MOBA      9      0    109
 
   - obsetvation
@@ -471,7 +487,8 @@ METRO      2    146      0
     - liste seed : [14, 1, 2, 12, 59, 96, 3, 11, 13, 18, 26, 30, 59] best -> 3
   - résultat
     - loss  :  test : 0.11, train : 0.13
-    - accuracy :  0.938
+    - ![img.png](screenshot/graphique_rbf/exp_rbf_17_3.png)
+    - accuracy :  0.939
     - matrice 3
           FPS  METRO   MOBA
   FPS    102      4      2
@@ -489,14 +506,15 @@ METRO      2    146      0
     - nb cluster : 500
     - max loop : 1000 
     - gamma : 0.0095
-    - liste seed : [14, 1, 2, 12, 59, 96, 3, 11, 13, 18, 26, 30, 59] best -> 59
+    - liste seed : [14, 1, 2, 12, 59, 96, 3, 11, 13, 18, 26, 30, 59] best -> 96
   - résultat
-    - loss  :  test : 0.09, train : 0.14
-    - accuracy :  0.93
-    - matrice 59
+    - loss  :  test : 0.11, train : 0.13
+    - ![img.png](screenshot/graphique_rbf/exp_18_3.png)
+    - accuracy :  0.939
+    - matrice 3
           FPS  METRO   MOBA
-  FPS    102      5      1
-METRO      6    142      0
+  FPS    102      4      2
+METRO      2    146      0
  MOBA      9      0    109
   - obsetvation
     - le résultats ne change pas trop, essayons avec plus de cluster 
@@ -506,14 +524,19 @@ METRO      6    142      0
 - utilisation 510, 520, 550, 530
   - parametre
     - mouvement max : 0.0001
-    - nb cluster : 510, 
+    - nb cluster : 510, 520, 550, 530
     - max loop : 1000 
     - gamma : 0.01
     - liste seed : [14, 1, 2, 12, 59, 96, 3, 11, 13, 18, 26, 30, 59] best -> 2
   - résultat
-    - loss  :  510(test : 0.09, train : 0.14), 550(pareil), 520(test : 0.11, test : 0.13), 530(0.1, 0.15)m 524(0.11, 0.13)
+    - loss  :  510(test : 0.09, train : 0.14) 550 (pareil)
+    -![img.png](screenshot/graphique_rbf/exp_rbf_19_510_550_2.png)
+    - 520(test : 0.11, test : 0.13), 
+    - ![img.png](screenshot/graphique_rbf/exp_rbf_19_520_3.png)
+    - 530(0.1, 0.15)m 
+    - ![img.png](screenshot/graphique_rbf/exp_rbg_19_530_59.png)
     - accuracy :  510(0.93), 550(0.92), 530(0.92), 520(0.939)
-    - matrice 2 -> 510
+    - matrice 510
          FPS  METRO   MOBA
   FPS    101      5      2
 METRO      4    144      0
@@ -533,11 +556,6 @@ METRO      2    146      0
   FPS    102      4      2
 METRO      6    142      0
  MOBA     11      0    107
-    - 520
-         FPS  METRO   MOBA
-  FPS    103      4      1
-METRO      2    146      0
- MOBA      9      0    109
   - obsetvation
     - le meilleurs résultats est avec  :520 cluster, 93,9% d'accyracy, 0.11 en loss durant le test, ey 0.13 de loss durant le test
     - avec des variation vers 530, il n'y a aucune différence
@@ -549,21 +567,68 @@ METRO      2    146      0
 - à la recherche de moisn de cluster
   - parametre
     - mouvement max : 0.0001
-    - nb cluster : 5219
+    - nb cluster : 519
     - max loop : 1000 
     - gamma : 0.01
-    - liste seed : [14, 1, 2, 12, 59, 96, 3, 11, 13, 18, 26, 30, 59] 
+    - liste seed : 3
   - résultat
     - loss  : 519(0.11, 0.13)
-    - accuracy :  519(0.938)
+    - ![img.png](screenshot/graphique_rbf/exp_rbf_20_3.png)
+    - accuracy :  519(0.939)
     - matrice 59
           FPS  METRO   MOBA
-  FPS    102      5      1
-METRO      6    142      0
+  FPS    102      4      2
+METRO      2    146      0
  MOBA      9      0    109
   - obsetvation
-    - le résultats d'avant avais plus d'accuracy, donc je vais le sélectionner le modèle à 520 cluster avec 0.01 gamma sous une seed de 3 (pour le moment)
+    - le résultats d'avant avais une accuracy équivalente
+    - Au niveau de la matrice, la différence est que ce modèle trouve 102 FPS pour les PFS, mais l'autre trouve 103
+    - Donc je vais le sélectionner le modèle à 520 cluster avec 0.01 gamma sous une seed de 3 (pour le moment)
     - utilisatio de l'aléatoire pour avoir une meilleur seed
+
+--------------------------------
+Une modification à été faite :
+- Le graphique calculais l'apprentissage selon le score arrondi (1, -1).
+- Maintenant il à été modifié pour comparer les résultats en brutes.
+- Je vais donc repartir sur quelque modèle et baisser la loss
+
+## exp 21
+- meilleur résultats à 520 cluster et 0.01 de gamma
+- accuracy 94.4%
+- matrice équivalente
+- loss train : 0.16, test :  0.29
+- ![img.png](screenshot/graphique_rbf/exp_21_3.png)
+- il faudrais voir des résultats intéressant auparavent car on pourrais avoir un début de sur apprentissage
+
+
+## exp 22
+- autre bon résultats : 300 clusters avec 0.01 de gamma 
+- accuracy 93.9%
+- loss train : 0.21, test :  0.31
+- ![img.png](screenshot/graphique_rbf/exp_22_2.png)
+- il y a encore environ 10 de différence, essayons avec 200 cluster, qui d'après moi devrais avoir de moins bon résultats en train
+
+## exp 23
+- autre bon résultats : 200 clusters avec 0.01 de gamma 
+- accuracy 93.9%
+- loss train : 0.24, test :  0.31
+- ![img.png](screenshot/graphique_rbf/exp_22_2.png)
+- une différence équivalente avec peu d'évolution avec 300 clusters
+
+## exp 24
+- pour se confirmer : 100 clusters avec 0.01 de gamma 
+- accuracy 92.5%
+- loss train : 0.3, test :  0.35
+- ![img.png](screenshot/graphique_rbf/exp 24_1.png)
+- une confiration, l'écart est normal
+
+
+## exp 25
+- pour montrer un cas de sur-apprentissage : 1000 clusters avec 0.1 de gamma 
+- accuracy 84.5%
+- loss train : 0.35, test :  0.9
+- ![img.png](screenshot/graphique_rbf/exp_25_14.png)
+- on voir bien ici le sur-apprentissage
 
 
 

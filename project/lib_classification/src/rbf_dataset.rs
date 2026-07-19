@@ -308,6 +308,18 @@ pub extern "C" fn RBF_model_predict(model: *const RBFModel, features: *const f32
 
 
 #[unsafe(no_mangle)]
+pub extern "C" fn RBF_model_predict_score(model :*const RBFModel, features: *const f32, feature_len: usize) -> f32{
+    if model.is_null() || features.is_null(){
+        return f32::NAN;
+    }
+
+    let model = unsafe {&*model};
+    let features = unsafe{ std::slice::from_raw_parts(features, feature_len)};
+    model.prediction(features).unwrap_or(f32::NAN)
+}
+
+
+#[unsafe(no_mangle)]
 pub extern "C" fn RBF_model_free(model: *mut RBFModel) {
     if model.is_null() {
         return;

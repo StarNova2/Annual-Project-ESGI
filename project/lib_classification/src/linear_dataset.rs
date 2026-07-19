@@ -53,42 +53,36 @@ impl LinearModel {
         Some(score)
     }
 
-    fn regression(&mut self, donnee: &[f32], liste_label: &[f32], nb_samples: usize, nb_features: usize) {
-
-        if donnee.len() != nb_samples * nb_features {
-            return;
+    fn regression(&mut self, donnee: &[f32], liste_label: &[f32], nb_samples: usize, nb_features: usize) -> i32 {
+        if donnee.len() != nb_samples * nb_features || nb_features != self.entree_dim {
+            return -1;
         }
 
-        let mut x = Mat::<f32>::zeros(nb_samples, nb_features);
+        let mut x = Mat::<f32>::zeros(nb_samples, nb_features + 1);
         let mut y = Mat::<f32>::zeros(nb_samples, 1);
 
         for i in 0..nb_samples {
+            x[(i, 0)] = 1.0;
             for j in 0..nb_features {
-                x[(i, j)] = donnee[i * nb_features + j];
+                x[(i, j + 1)] = donnee[i * nb_features + j];   // <- j+1, pas j
             }
             y[(i, 0)] = liste_label[i];
         }
 
         let xt = x.transpose();
         let xtx = &xt * &x;
-
         let xty = &xt * &y;
 
-
-        let llt =  xtx.llt(Side::Lower).unwrap();
+        let llt = match xtx.llt(Side::Lower) {
+            Ok(decomp) => decomp,
+            Err(_) => return -2,
+        };
         let w = llt.solve(&xty);
 
-        let mut poids = Vec::with_capacity(nb_features);
-
-        for i in 0..nb_features{
-            poids.push(w[(i, 0)]);
-        }
-
-        self.biais = poids[0];
-        self.poids = poids[1..].to_vec();
-
+        self.biais = w[(0, 0)];
+        self.poids = (0..nb_features).map(|i| w[(i + 1, 0)]).collect();
+        0
     }
-
 
     fn entrainement(&mut self, nb_donnee: &[f32], liste_label: &[f32], nb_pixel_image: usize, epoch: usize) -> bool {
         if nb_pixel_image == 0 || nb_donnee.len() != nb_pixel_image * self.entree_dim || liste_label.len() != nb_pixel_image {
