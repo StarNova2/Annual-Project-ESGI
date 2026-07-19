@@ -17,6 +17,7 @@ def image_to_vector(
     raw_image = image_file if isinstance(image_file, bytes) else image_file.read()
     image = Image.open(BytesIO(raw_image))
 
+    # Format modèle
     if grayscale:
         image = image.convert("L")
     else:
@@ -25,6 +26,7 @@ def image_to_vector(
     image = image.resize(image_size, Image.Resampling.BILINEAR)
     values = np.asarray(image, dtype=np.float32).reshape(-1)
 
+    # Pixels [-1, 1]
     return ((values / 127.5) - 1.0).tolist()
 
 
@@ -35,6 +37,7 @@ def preprocessing_metadata(
     width, height = image_size
     channel_count = 1 if grayscale else 3
 
+    # Infos API
     return {
         "width": width,
         "height": height,

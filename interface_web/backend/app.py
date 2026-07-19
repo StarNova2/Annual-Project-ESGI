@@ -15,6 +15,7 @@ app = Flask(__name__, static_folder=str(FRONTEND_DIR), static_url_path="")
 
 @app.after_request
 def add_cors_headers(response):
+    # CORS local
     response.headers["Access-Control-Allow-Origin"] = "*"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type"
@@ -38,6 +39,7 @@ def preprocessing():
 
 @app.post("/api/predict")
 def predict():
+    # model + image
     model_filename = request.form.get("model")
     image = request.files.get("image")
 
@@ -50,6 +52,7 @@ def predict():
     image_vector = image_to_vector(image.stream)
 
     try:
+        # Prédiction JSON
         prediction = predict_with_saved_model(model_filename, image_vector)
     except (FileNotFoundError, ValueError) as error:
         return jsonify({"error": str(error)}), 400

@@ -2,14 +2,6 @@
 
 Interface locale pour utiliser les modèles entraînés du projet.
 
-Objectif :
-
-- garder l'interface séparée du code des modèles ;
-- servir une page HTML/CSS/JS classique ;
-- exposer une petite API Python pour lire les modèles sauvegardés dans `project/PythonProject/save_model` ;
-- appliquer le même preprocessing que les notebooks ;
-- calculer l'inférence à partir de l'état sauvegardé dans les JSON, sans modifier les fichiers existants.
-
 ## Structure
 
 ```text

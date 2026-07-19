@@ -10,6 +10,7 @@ import numpy as np
 from config import CLASS_NAMES, SAVE_MODEL_DIR
 
 
+# Ordre + noms prioritaires des jsons
 MODEL_FAMILY_ORDER = ("linear", "rbf", "mlp")
 PREFERRED_MODEL_FILENAMES = {
     "linear": ("linear/model_linear.json", "model_linear.json"),
@@ -46,6 +47,7 @@ def list_saved_models(save_model_dir: Path = SAVE_MODEL_DIR) -> list[ModelInfo]:
     if not save_model_dir.exists():
         return discovered_models
 
+    # Scan JSON
     for path in sorted(save_model_dir.rglob("*.json")):
         try:
             payload = _read_model_payload(path)
@@ -82,6 +84,7 @@ def predict_with_saved_model(model_filename: str, image_vector: list[float]) -> 
     expected_input_dim = int(parameters.get("input_dim") or _first_layer_size(layer_sizes) or 0)
     model_type = payload.get("model_type")
 
+    # Entrée plate
     x = np.asarray(image_vector, dtype=np.float32).reshape(-1)
 
     if expected_input_dim and x.shape[0] != expected_input_dim:
@@ -123,6 +126,7 @@ def _resolve_model_path(model_filename: str) -> Path:
     save_model_dir = SAVE_MODEL_DIR.resolve()
     candidate = (save_model_dir / Path(model_filename)).resolve()
 
+    # Sécurité chemin
     if save_model_dir != candidate and save_model_dir not in candidate.parents:
         raise FileNotFoundError(f"Modèle introuvable : {model_filename}")
 
@@ -155,6 +159,7 @@ def _select_preferred_model(family: str, models: list[ModelInfo]) -> ModelInfo |
 
     models_by_filename = {model.filename: model for model in models}
 
+    # Nom standard puis fallback
     for preferred_filename in PREFERRED_MODEL_FILENAMES.get(family, ()):
         if preferred_filename in models_by_filename:
             return models_by_filename[preferred_filename]
@@ -227,6 +232,7 @@ def _last_layer_size(layer_sizes: list[Any]) -> int | None:
 def _predict_scores_from_payload(payload: dict[str, Any], x: np.ndarray) -> np.ndarray:
     model_type = payload.get("model_type")
 
+    # Choix algo
     if model_type == "Lineaire":
         return _predict_linear_scores(payload, x)
 
@@ -245,6 +251,7 @@ def _predict_linear_scores(payload: dict[str, Any], x: np.ndarray) -> np.ndarray
     for submodel in payload.get("submodels", []):
         weights = np.asarray(submodel["poids"], dtype=np.float32)
         bias = float(submodel["biais"])
+        # w.x + b
         scores.append(float(np.dot(weights, x) + bias))
 
     return np.asarray(scores, dtype=np.float32)
@@ -258,6 +265,7 @@ def _predict_rbf_decisions(payload: dict[str, Any], x: np.ndarray) -> np.ndarray
         weights = np.asarray(submodel["poids"], dtype=np.float32)
         gamma = float(submodel["gamma"])
 
+        # Noyau RBF
         squared_distances = np.sum((clusters - x) ** 2, axis=1)
         activations = np.exp(-gamma * squared_distances)
         raw_score = float(np.dot(weights, activations))
@@ -296,6 +304,7 @@ def _predict_flat_rust_mlp_weights(
     activation = np.asarray(x, dtype=np.float64)
     cursor = 0
 
+    # Poids Rust à plat
     if activation.shape[0] != layer_sizes[0]:
         raise ValueError(
             f"Format image incompatible : {activation.shape[0]} valeurs reçues, "
