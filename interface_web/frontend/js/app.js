@@ -12,6 +12,7 @@ const scoresList = document.querySelector("#scores-list");
 const toggleDetailsButton = document.querySelector("#toggle-details");
 const API_BASE = window.location.protocol === "file:" ? "http://127.0.0.1:5000" : "";
 
+// Fallback API off
 const fallbackModels = [
   {
     filename: "linear/model_linear.json",
@@ -36,6 +37,7 @@ const fallbackModels = [
 ];
 
 const state = {
+  // État UI
   selectedModel: null,
   selectedFile: null,
   apiAvailable: false,
@@ -45,6 +47,7 @@ const state = {
 
 async function loadModels() {
   try {
+    // Source réelle : backend
     const response = await fetch(`${API_BASE}/api/models`);
 
     if (!response.ok) {
@@ -117,6 +120,7 @@ function selectModel(filename, options = {}) {
     card.classList.toggle("selected", card.dataset.filename === filename);
   }
 
+  // Rejoue avec la dernière image
   if (
     autoAnalyze &&
     previousModel &&
@@ -183,6 +187,7 @@ function setSelectedFile(file) {
   }
 
   const image = document.createElement("img");
+  // Preview locale
   image.src = URL.createObjectURL(file);
   image.alt = file.name;
 
@@ -255,6 +260,7 @@ function renderScores(outputs) {
 
   scoresList.innerHTML = outputs
     .map((output) => {
+      // Barres relatives
       const normalizedScore = (output.value - minValue) / scoreRange;
       const width = Math.max(8, Math.round(normalizedScore * 100));
       return `
@@ -323,6 +329,7 @@ async function runPrediction() {
   }
 
   const formData = new FormData();
+  // Fichier courant
   formData.append("model", state.selectedModel);
   formData.append("image", state.selectedFile);
 
